@@ -116,6 +116,10 @@ public:
         }
     }
 
+    void AddKv(std::string section, std::string key, std::string value) {
+        SetValue(std::move(section), std::move(key), std::move(value));
+    }
+
     void RemoveSection(std::string section) {
         sections_.erase(section);
     }
