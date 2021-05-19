@@ -20,6 +20,7 @@ int main() {
     return 0;
 }
 ```
+For further examples look at the [wiki](https://github.com/X-rays5/inireader/wiki)
 
 # Know issues
 A comment on a line where a comment declare character has been escaped won't work.
