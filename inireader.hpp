@@ -265,7 +265,7 @@ private:
         int semicolonpos = line.find(';') != std::string::npos ? line.find(';') : INT_MAX;
         int hashtagpos = line.find('#') != std::string::npos ? line.find('#') : INT_MAX;
 
-        if (semicolonpos > hashtagpos) {
+        if (semicolonpos < hashtagpos) {
             if (semicolonpos != std::string::npos) {
                 int semicolonpos = line.find(';');
                 if (semicolonpos > 0) {
