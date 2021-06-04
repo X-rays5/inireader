@@ -249,7 +249,7 @@ private:
                     // if we get to here we assume it's a multi line value
                     if (lastkey != "NULL") {
                         std::string setvalue = GetString(currentsection, lastkey);
-                        SetValue(currentsection, lastkey, setvalue + " " + line);
+                        SetValue(currentsection, lastkey, setvalue + "\n" + line);
                     }
                 }
             } catch (ini_exception &e) {
