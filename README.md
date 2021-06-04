@@ -1,5 +1,5 @@
 # inireader
-My first parser after 6 months of coding.
+My first parser after 10 months of cpp.
 
 # Basic usage
 
