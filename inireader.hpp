@@ -193,8 +193,7 @@ public:
         if (section_ != sections_.end()) {
             return section_->second;
         } else {
-            std::map<std::string, std::string> rtn;
-            return rtn;
+            return std::map<std::string, std::string>{};
         }
     }
 
