@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <string>
+#include <sstream>
 #include <fstream>
 #include <memory>
 #include <vector>
@@ -49,7 +50,26 @@ namespace ini {
             return true;
         }
 
-        // Get an entry in the root map
+        std::string stringify() {
+            std::stringstream stringified;
+
+            // root kv
+            for (auto&& kv : parsed_->root)
+                stringified << kv.first << '=' << kv.second << "\n";
+
+            stringified << "\n"; // line between sections
+            // normal kv
+            for (auto&& section : parsed_->sections) {
+                stringified << '[' << section.first << ']' << "\n";
+                for (auto&& kv: section.second.entries)
+                    stringified << kv.first << '=' << kv.second << "\n";
+                stringified << "\n"; // line between sections
+            }
+
+            return stringified.str();
+        }
+
+        // Get an entry where the section was not specified
         std::string GetDefault(const std::string& key) {
             auto entry = parsed_->root.find(key);
 
@@ -59,7 +79,6 @@ namespace ini {
             return {};
         }
 
-
         bool HasParseError() {
             return !last_parse_error_.empty();
         }
@@ -67,6 +86,7 @@ namespace ini {
         std::string GetParseError() {
             return last_parse_error_;
         }
+
 
         using Entries_t = std::unordered_map<std::string, std::string>;
 
