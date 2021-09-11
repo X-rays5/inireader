@@ -79,10 +79,12 @@ namespace ini {
             return {};
         }
 
+        // overwrites if already exists
         void AddKVDefault(const std::string& key, const std::string& val) {
             parsed_->root[key] = val;
         }
 
+        // overwrites if already exists
         void AddKV(const std::string& section, const std::string& key, const std::string& val) {
             if (!section.empty()) {
                 auto entry = parsed_->sections.find(section);
@@ -97,6 +99,35 @@ namespace ini {
             } else {
                 AddKVDefault(key, val);
             }
+        }
+
+        void RemoveDefault() {
+            parsed_->root.clear();
+        }
+
+        void RemoveKVDefault(const std::string& key) {
+            auto entry = parsed_->root.find(key);
+
+            if (entry != parsed_->root.end())
+                parsed_->root.erase(entry);
+        }
+
+        void RemoveKV(const std::string& section, const std::string& key, const std::string& val) {
+            auto entry = parsed_->sections.find(section);
+
+            if (entry != parsed_->sections.end()) {
+                auto entry_kv = entry->second.entries.find(key);
+
+                if (entry_kv != entry->second.entries.end())
+                    entry->second.entries.erase(entry_kv);
+            }
+        }
+
+        void RemoveSection(const std::string& section) {
+            auto entry = parsed_->sections.find(section);
+
+            if (entry != parsed_->sections.end())
+                parsed_->sections.erase(entry);
         }
 
         bool HasParseError() {
