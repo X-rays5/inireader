@@ -1,17 +1,17 @@
 #include <iostream>
 #include "../inireader.hpp"
+#include <filesystem>
 
 int main() {
-    ini inireader;
-    inireader.Parse("../test.ini");
-    if (!inireader.HasParseError()) {
-        std::cout << "Version " << inireader.GetString("settings", "version") << "\n";
-        inireader.AddKv("settings", "date", "monday");
-        inireader.AddSection("emptysection");
-        std::cout << inireader.Stringify() << "\n";
+    ini::Parser ini_file;
+    ini_file.Parse("test.ini");
+    if (!ini_file.HasParseError()) {
+        std::string root = ini_file.GetDefault("dsff_SDFsd");
+        std::string float_val = ini_file["Numbers"]["float4"];
+
+        std::cout << root << " " << float_val << "\n";
     } else {
-        std::cout << "[ERROR] " << inireader.GetParseError() << "\n";
+        std::cout << ini_file.GetParseError() << "\n";
     }
-    system("pause");
     return 0;
 }
