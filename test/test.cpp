@@ -1,6 +1,7 @@
 #include <iostream>
-#include "../inireader.hpp"
+#include <fstream>
 #include <filesystem>
+#include "../inireader.hpp"
 
 int main() {
     ini::Parser ini_file;
@@ -10,6 +11,14 @@ int main() {
         std::string float_val = ini_file["Numbers"]["float4"];
 
         std::cout << root << " " << float_val << "\n";
+
+        ini_file.AddKVDefault("oh", "yes");
+        ini_file.AddKV("hi", "oh", "yes");
+
+        std::ofstream writer("test.ini");
+        if (writer.is_open())
+            writer << ini_file.stringify();
+
     } else {
         std::cout << ini_file.GetParseError() << "\n";
     }
