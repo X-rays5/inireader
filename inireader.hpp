@@ -92,7 +92,7 @@ namespace ini {
                 } else {
                     Entries new_section;
                     new_section.entries[key] = val;
-                    parsed_->sections[parsed_->current_section] = new_section;
+                    parsed_->sections[section] = new_section;
                 }
             } else {
                 AddKVDefault(key, val);
