@@ -112,7 +112,7 @@ namespace ini {
                 parsed_->root.erase(entry);
         }
 
-        void RemoveKV(const std::string& section, const std::string& key, const std::string& val) {
+        void RemoveKV(const std::string& section, const std::string& key) {
             auto entry = parsed_->sections.find(section);
 
             if (entry != parsed_->sections.end()) {
