@@ -79,6 +79,26 @@ namespace ini {
             return {};
         }
 
+        void AddKVDefault(const std::string& key, const std::string& val) {
+            parsed_->root[key] = val;
+        }
+
+        void AddKV(const std::string& section, const std::string& key, const std::string& val) {
+            if (!section.empty()) {
+                auto entry = parsed_->sections.find(section);
+
+                if (entry != parsed_->sections.end()) {
+                    entry->second.entries[key] = val;
+                } else {
+                    Entries new_section;
+                    new_section.entries[key] = val;
+                    parsed_->sections[parsed_->current_section] = new_section;
+                }
+            } else {
+                AddKVDefault(key, val);
+            }
+        }
+
         bool HasParseError() {
             return !last_parse_error_.empty();
         }
@@ -145,18 +165,10 @@ namespace ini {
             auto entry = GetEntry(line);
             if (!entry.key.empty() && !entry.value.empty()) {
                 if (!parsed_->current_section.empty()) {
-                    auto section = parsed_->sections.find(parsed_->current_section);
-
-                    if (section != parsed_->sections.end()) {
-                        section->second.entries[entry.key] = entry.value;
-                    } else {
-                        Entries new_section;
-                        new_section.entries[entry.key] = entry.value;
-                        parsed_->sections[parsed_->current_section] = new_section;
-                    }
+                    AddKV(parsed_->current_section, entry.key, entry.value);
                 } else {
                     // no section has been found yet so write to root
-                    parsed_->root[entry.key] = entry.value;
+                    AddKVDefault(entry.key, entry.value);
                 }
                 return;
             }
