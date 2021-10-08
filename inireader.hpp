@@ -212,11 +212,15 @@ namespace ini {
         }
 
         static void RemoveComment(std::string& line) {
-            std::regex pattern(R"(.*[^\\];)");
+            std::regex pattern(R"((^\;.*)|(^\#.*)|(.*[^\\];)|(.*[^\\]#))");
             std::smatch match;
 
             if (std::regex_search(line, match, pattern)) {
-                line.erase(match[0].str().size() - 1, line.back());
+                // full string match
+                if (match[0].str() == line)
+                    line.clear();
+                else
+                    line.erase(match[0].str().size() - 1, line.back());
             }
         }
 
