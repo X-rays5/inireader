@@ -10,6 +10,8 @@
 #include <cassert>
 #include <unordered_map>
 #include <regex>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 namespace ini {
     class Parser {
@@ -20,7 +22,7 @@ namespace ini {
         }
 
         // Parsing a file will delete all data that was parsed already
-        bool Parse(const std::string& file_name) {
+        bool Parse(const fs::path& file_name) {
             std::fstream reader(file_name);
             return Parse(reader);
         }
