@@ -194,6 +194,8 @@ namespace ini {
                 return;
 
             RemoveComment(line);
+						if (line.empty())
+							return; // don't process the line any further when empty
 
             auto entry = GetEntry(line);
             if (!entry.key.empty() && !entry.value.empty()) {
