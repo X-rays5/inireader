@@ -21,3 +21,6 @@ jobs:
       
     - name: Build
       run: cmake --build ${{github.workspace}}/test/. --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      run: ctest -V ${{github.workspace}}\test\.
