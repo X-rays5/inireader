@@ -6,6 +6,10 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
+defaults:
+  run:
+    working-directory: ${{github.workspace}}\test
+
 jobs:
   build:
     runs-on: windows-latest
@@ -15,12 +19,13 @@ jobs:
 
     - name: Get Submodules
       run: git submodule update --init
+      working-directory: ${{github.workspace}}
     
     - name: Setup CMake
-      run: cmake ${{github.workspace}}\test\CMakeLists.txt -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake CMakeLists.txt
       
     - name: Build
-      run: cmake --build ${{github.workspace}}\test\. --config ${{env.BUILD_TYPE}}
+      run: cmake --build . --config ${{env.BUILD_TYPE}}
 
     - name: Test
-      run: ctest -V ${{github.workspace}}\test\.
+      run: ctest -V .
