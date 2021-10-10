@@ -1,0 +1,20 @@
+name: Build Windows
+
+on: [pull_request, push]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup CMake
+      run: cmake ${{github.workspace}}\test\CMakeLists.txt -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      
+    - name: Build
+      run: cmake --build ${{github.workspace}}\test\. --config ${{env.BUILD_TYPE}}
