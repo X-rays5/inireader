@@ -12,6 +12,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Get Submodules
+      run: git submodule update --init
     
     - name: Setup CMake
       run: cmake ${{github.workspace}}/test/CMakeLists.txt -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
