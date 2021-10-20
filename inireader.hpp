@@ -21,13 +21,23 @@ namespace ini {
             parsed_ = std::make_unique<Parsed>(); // avoid nullptr exceptions when parse hasn't been called
         }
 
-        // Parsing a file will delete all data that was parsed already
+        /// Opens file at given path and parses it
+        /**
+         * @param file_name Path to ini file to parse
+         * @return Opened file successfully
+         * @note Calling this function will reset the parsed data
+         */
         bool Parse(const fs::path& file_name) {
             std::fstream reader(file_name);
             return Parse(reader);
         }
 
-        // Parsing a file will delete all data that was parsed already
+        /// Reads file and parsed it
+        /**
+         * @param file Open file stream with file to parse
+         * @return Opened file successfully
+         * @note Calling this function will reset the parsed data
+         */
         bool Parse(std::fstream& file) {
             // reset previous parse data if present
             parsed_ = std::make_unique<Parsed>();
@@ -52,6 +62,9 @@ namespace ini {
             return true;
         }
 
+				/**
+				 * @return Stringified version of parsed data
+				 */
         std::string stringify() {
             std::stringstream stringified;
 
@@ -71,7 +84,11 @@ namespace ini {
             return stringified.str();
         }
 
-        // Get an entry where the section was not specified
+        /// Get a kv which is located before the first section
+        /**
+         * @param key
+         * @return Value of kv
+         */
         std::string GetDefault(const std::string& key) {
             auto entry = parsed_->root.find(key);
 
@@ -81,12 +98,22 @@ namespace ini {
             return {};
         }
 
-        // overwrites if already exists
+        /**
+         * @param key
+         * @param val
+         * @note Overwrites value with key if already exists
+         */
         void AddKVDefault(const std::string& key, const std::string& val) {
             parsed_->root[key] = val;
         }
 
-        // overwrites if already exists
+        /**
+         *
+         * @param section
+         * @param key
+         * @param val
+         * @note Overwrites value with key if already exists
+         */
         void AddKV(const std::string& section, const std::string& key, const std::string& val) {
             if (!section.empty()) {
                 auto entry = parsed_->sections.find(section);
@@ -103,10 +130,15 @@ namespace ini {
             }
         }
 
+				/// Remove all key,values from the default section
         void RemoveDefault() {
             parsed_->root.clear();
         }
 
+				/// Remove a kv from the default section
+				/**
+				 * @param key
+				 */
         void RemoveKVDefault(const std::string& key) {
             auto entry = parsed_->root.find(key);
 
@@ -114,6 +146,11 @@ namespace ini {
                 parsed_->root.erase(entry);
         }
 
+				/// Remove a specific kv from a section
+				/**
+				 * @param section
+				 * @param key
+				 */
         void RemoveKV(const std::string& section, const std::string& key) {
             auto entry = parsed_->sections.find(section);
 
@@ -125,6 +162,10 @@ namespace ini {
             }
         }
 
+				/// Remove a section and all it's key,values
+				/**
+				 * @param section
+				 */
         void RemoveSection(const std::string& section) {
             auto entry = parsed_->sections.find(section);
 
@@ -132,10 +173,16 @@ namespace ini {
                 parsed_->sections.erase(entry);
         }
 
+				/**
+				 * @return Has a parse error occurred
+				 */
         bool HasParseError() {
             return !last_parse_error_.empty();
         }
 
+				/**
+				 * @return The last parse error
+				 */
         std::string GetParseError() {
             return last_parse_error_;
         }
@@ -147,7 +194,11 @@ namespace ini {
         struct Entries {
             Entries_t entries;
 
-            std::string operator[](std::string key) {
+						/**
+						 * @param key
+						 * @return Value of key in section
+						 */
+            std::string operator[](const std::string& key) {
                 auto entry = entries.find(key);
 
                 if (entry != entries.end()) {
@@ -158,8 +209,12 @@ namespace ini {
         };
         using Sections_t = std::unordered_map<std::string, Entries>;
 
-        Parser::Entries operator[](std::string key) {
-            auto entry = parsed_->sections.find(key);
+				/**
+				 * @param section
+				 * @return Section with all it's entries
+				 */
+        Parser::Entries operator[](const std::string& section) {
+            auto entry = parsed_->sections.find(section);
 
             if (entry != parsed_->sections.end()) {
                 return entry->second;
