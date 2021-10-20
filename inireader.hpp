@@ -308,25 +308,17 @@ namespace ini {
         }
 
         static inline std::string trim(std::string str, char trim_c) {
-            for (auto&& c : str) {
-                if (c == trim_c) {
-                    str.erase(0, 1);
-                } else {
-                    break; // stop as soon as it doesn't match anymore
-                }
-            }
-            return str;
+	        while(str.front() == trim_c) {
+						str.erase(0, 1);
+					}
+          return str;
         }
 
         static inline std::string trim_r(std::string str, char trim_c) {
-            for (int i = str.size(); i > 0; i--) {
-                if (str[i - 1] == trim_c) {
-                    str.pop_back();
-                } else {
-                    break; // stop as soon as it doesn't match anymore
-                }
-            }
-            return str;
+					while (str.back() == trim_c) {
+						str.pop_back();
+					}
+					return str;
         }
     };
 }
