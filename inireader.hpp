@@ -224,10 +224,6 @@ namespace ini {
 
     private:
         struct Entry {
-            Entry(std::string key, std::string value) : key(std::move(key)), value(std::move(value))
-            {
-            }
-
             const std::string key;
             const std::string value;
         };

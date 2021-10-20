@@ -18,22 +18,22 @@ struct TestCtx {
 	ini::Parser ini_file;
 };
 
-TEST(ParseTest, NoError) {
+TEST(Parse, NoError) {
 	EXPECT_EQ(g_testctx->ini_file.HasParseError(), false);
 }
 
-TEST(ParseTest, DefaultSection) {
+TEST(Parse, DefaultSection) {
 	EXPECT_STREQ(g_testctx->ini_file.GetDefault("default section value").c_str(), "test value");
 }
 
-TEST(ParseTest, Section1) {
+TEST(Parse, Section1) {
 	auto section = g_testctx->ini_file["Section 1"];
 	EXPECT_STREQ(section["Option 1"].c_str(), "value 1");
 	EXPECT_STREQ(section["Option 2"].c_str(), "value 2");
 	EXPECT_STREQ(section["oPtion 1"].c_str(), "value 2\\ \\ \\");
 }
 
-TEST(ParseTest, Numbers) {
+TEST(Parse, Numbers) {
 	auto section = g_testctx->ini_file["Numbers"];
 	EXPECT_STREQ(section["num"].c_str(), "-1285");
 	EXPECT_STREQ(section["num_bin"].c_str(), "0b01101001");
@@ -45,11 +45,40 @@ TEST(ParseTest, Numbers) {
 	EXPECT_STREQ(section["float4"].c_str(), "-1.1245864E-6");
 }
 
-TEST(ParseTest, Other) {
+TEST(Parse, Other) {
 	auto section = g_testctx->ini_file["Other"];
 	EXPECT_STREQ(section["bool1"].c_str(), "1");
 	EXPECT_STREQ(section["bool2"].c_str(), "on");
 	EXPECT_STREQ(section["bool3"].c_str(), "f");
+}
+
+TEST(Add, Default) {
+	g_testctx->ini_file.AddKVDefault("testv", "hi");
+	g_testctx->ini_file.GetDefault("testv");
+	EXPECT_STREQ(g_testctx->ini_file.GetDefault("testv").c_str(), "hi");
+}
+
+TEST(Add, Kv) {
+	g_testctx->ini_file.AddKV("addedsection", "test", "value");
+	EXPECT_STREQ(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
+}
+
+TEST(Remove, Default) {
+	g_testctx->ini_file.RemoveKVDefault("testv");
+	EXPECT_STRNE(g_testctx->ini_file.GetDefault("testv").c_str(), "hi");
+	g_testctx->ini_file.RemoveDefault();
+	EXPECT_STRNE(g_testctx->ini_file.GetDefault("default section value").c_str(), "test value");
+}
+
+TEST(Remove, Kv) {
+	g_testctx->ini_file.RemoveKV("addedsection", "test");
+	EXPECT_STRNE(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
+}
+
+TEST(Remove, Section) {
+	g_testctx->ini_file.AddKV("addedsection", "test", "value");
+	g_testctx->ini_file.RemoveSection("addedsection");
+	EXPECT_STRNE(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
 }
 
 int main(int argc, char** argv) {
