@@ -176,6 +176,46 @@ namespace ini {
         parsed_->sections.erase(entry);
     }
 
+    /// Check if a kv in the default sections exists
+    /**
+     * @param key
+     * @return If the kv exists
+     */
+    inline bool HasKVDefault(const std::string& key) {
+      auto entry = parsed_->root.find(key);
+
+      if (entry != parsed_->root.end())
+        return true;
+      return false;
+    }
+
+    /// Check if a section exists
+    /**
+     * @param section
+     * @return If the section exists
+     */
+    inline bool HasSection(const std::string& section) {
+      return parsed_->sections.find(section) != parsed_->sections.end();
+    }
+
+    /// Check if a kv in a section exists
+    /**
+     * @param section
+     * @param key
+     * @return If the kv exists
+     */
+    inline bool HasKV(const std::string& section, const std::string& key) {
+      auto entry = parsed_->sections.find(section);
+
+      if(entry != parsed_->sections.end()) {
+        auto entry_kv = entry->second.entries.find(key);
+
+        if(entry_kv != entry->second.entries.end())
+          return true;
+      }
+      return false;
+    }
+
     /**
      * @return Has a parse error occurred
      */

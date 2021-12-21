@@ -81,6 +81,20 @@ TEST(Remove, Section) {
   EXPECT_STRNE(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
 }
 
+TEST(Has, Default) {
+  g_testctx->ini_file.AddKVDefault("testv", "hi");
+  EXPECT_EQ(g_testctx->ini_file.HasKVDefault("testv"), true);
+  g_testctx->ini_file.RemoveKVDefault("testv");
+}
+
+TEST(Has, Section) {
+  EXPECT_EQ(g_testctx->ini_file.HasSection("Section 1"), true);
+}
+
+TEST(Has, Kv) {
+  EXPECT_EQ(g_testctx->ini_file.HasKV("Section 1", "Option 1"), true);
+}
+
 int main(int argc, char** argv) {
   constexpr const char* testfile = "default section value = test value ; section less\n"
                                    "\n"
