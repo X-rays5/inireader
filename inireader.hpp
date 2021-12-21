@@ -10,7 +10,6 @@
 #include <fstream>
 #include <memory>
 #include <vector>
-#include <cassert>
 #include <unordered_map>
 #include <regex>
 #include <filesystem>
@@ -47,7 +46,9 @@ namespace ini {
       last_parse_error_.clear();
 
       if (!file.is_open()) {
-        assert(file.is_open());
+#ifndef NDEBUG
+        throw std::runtime_error("Couldn't open file");
+#endif
         last_parse_error_ = "Couldn't open file";
         return false;
       }

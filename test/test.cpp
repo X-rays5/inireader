@@ -18,6 +18,11 @@ struct TestCtx {
   ini::Parser ini_file;
 };
 
+TEST(Parse, Error) {
+  EXPECT_ANY_THROW(g_testctx->ini_file.Parse("doesntexists.ini"));
+  g_testctx->ini_file.Parse("test.ini"); // without this all other tests will fail
+}
+
 TEST(Parse, NoError) {
   EXPECT_EQ(g_testctx->ini_file.HasParseError(), false);
 }
