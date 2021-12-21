@@ -30,7 +30,7 @@ namespace ini {
      * @return Opened file successfully
      * @note Calling this function will reset the parsed data
      */
-    bool Parse(const fs::path& file_name) {
+    inline bool Parse(const fs::path& file_name) {
       std::fstream reader(file_name);
       return Parse(reader);
     }
@@ -92,7 +92,7 @@ namespace ini {
      * @param key
      * @return Value of kv
      */
-    std::string GetDefault(const std::string& key) {
+    inline std::string GetDefault(const std::string& key) {
       auto entry = parsed_->root.find(key);
 
       if (entry != parsed_->root.end()) {
@@ -106,7 +106,7 @@ namespace ini {
      * @param val
      * @note Overwrites value with key if already exists
      */
-    void AddKVDefault(const std::string& key, const std::string& val) {
+    inline void AddKVDefault(const std::string& key, const std::string& val) {
       parsed_->root[key] = val;
     }
 
@@ -134,7 +134,7 @@ namespace ini {
     }
 
     /// Remove all key,values from the default section
-    void RemoveDefault() {
+    inline void RemoveDefault() {
       parsed_->root.clear();
     }
 
@@ -142,7 +142,7 @@ namespace ini {
     /**
      * @param key
      */
-    void RemoveKVDefault(const std::string& key) {
+    inline void RemoveKVDefault(const std::string& key) {
       auto entry = parsed_->root.find(key);
 
       if (entry != parsed_->root.end())
@@ -154,7 +154,7 @@ namespace ini {
      * @param section
      * @param key
      */
-    void RemoveKV(const std::string& section, const std::string& key) {
+    inline void RemoveKV(const std::string& section, const std::string& key) {
       auto entry = parsed_->sections.find(section);
 
       if (entry != parsed_->sections.end()) {
@@ -169,7 +169,7 @@ namespace ini {
     /**
      * @param section
      */
-    void RemoveSection(const std::string& section) {
+    inline void RemoveSection(const std::string& section) {
       auto entry = parsed_->sections.find(section);
 
       if (entry != parsed_->sections.end())
@@ -179,17 +179,16 @@ namespace ini {
     /**
      * @return Has a parse error occurred
      */
-    bool HasParseError() {
+    inline bool HasParseError() {
       return !last_parse_error_.empty();
     }
 
     /**
      * @return The last parse error
      */
-    std::string GetParseError() {
+    inline std::string GetParseError() {
       return last_parse_error_;
     }
-
 
     using Entries_t = std::unordered_map<std::string, std::string>;
 
@@ -269,7 +268,7 @@ namespace ini {
       }
     }
 
-    static void RemoveComment(std::string& line) {
+    static inline void RemoveComment(std::string& line) {
       std::regex pattern(R"((^\;.*)|(^\#.*)|(.*[^\\];)|(.*[^\\]#))");
       std::smatch match;
 
@@ -282,7 +281,7 @@ namespace ini {
       }
     }
 
-    static Entry GetEntry(const std::string& line) {
+    static inline Entry GetEntry(const std::string& line) {
       std::regex pattern(R"((.*)= ?(.*))");
       std::smatch match;
 
@@ -295,7 +294,7 @@ namespace ini {
       return {"",""};
     }
 
-    static std::string GetSection(const std::string& line) {
+    static inline std::string GetSection(const std::string& line) {
       std::regex pattern(R"(\[(.*)\])");
       std::smatch match;
 
