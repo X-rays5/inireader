@@ -65,7 +65,7 @@ namespace ini {
     /**
      * @return Stringified version of parsed data
      */
-    std::string stringify() {
+    std::string Stringify() {
       std::stringstream stringified;
 
       // root kv
