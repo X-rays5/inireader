@@ -2,6 +2,9 @@
 // Created by X-ray on 5/18/2021.
 //
 #pragma once
+
+#ifndef INIREADER_HPP
+#define INIREADER_HPP
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -318,3 +321,4 @@ namespace ini {
     }
   };
 }
+#endif // INIREADER_HPP
