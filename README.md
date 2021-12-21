@@ -23,7 +23,7 @@ int main() {
 
         std::ofstream writer("test.ini");
         if (writer.is_open())
-            writer << ini_file.stringify();
+            writer << ini_file.Stringify();
 
     } else {
         std::cout << ini_file.GetParseError() << "\n";
