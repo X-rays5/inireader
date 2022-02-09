@@ -1,7 +1,11 @@
-#include <iostream>
 #include <fstream>
 #include <gtest/gtest.h>
+
+#ifndef NDEBUG
+#define NDEBUG
 #include "../inireader.hpp"
+#undef NDEBUG
+#endif
 
 struct TestCtx;
 inline TestCtx* g_testctx{};
@@ -19,77 +23,73 @@ struct TestCtx {
 };
 
 TEST(Parse, Error) {
-  EXPECT_ANY_THROW(g_testctx->ini_file.Parse("doesntexists.ini"));
-  g_testctx->ini_file.Parse("test.ini"); // without this all other tests will fail
-}
-
-TEST(Parse, NoError) {
-  EXPECT_EQ(g_testctx->ini_file.HasParseError(), false);
+  EXPECT_ANY_THROW(g_testctx->ini_file.Parse("doesntexists.ini", true));
+  g_testctx->ini_file.Parse("test.ini", true); // without this all other tests will fail
 }
 
 TEST(Parse, DefaultSection) {
-  EXPECT_STREQ(g_testctx->ini_file.GetDefault("default section value").c_str(), "test value");
+  EXPECT_STREQ(g_testctx->ini_file.GetRootSection()["default section value"].as<const char*>(), "test value");
 }
 
 TEST(Parse, Section1) {
   auto section = g_testctx->ini_file["Section 1"];
-  EXPECT_STREQ(section["Option 1"].c_str(), "value 1");
-  EXPECT_STREQ(section["Option 2"].c_str(), "value 2");
-  EXPECT_STREQ(section["oPtion 1"].c_str(), "value 2\\ \\ \\");
+  EXPECT_STREQ(section["Option 1"].as<const char*>(), "value 1");
+  EXPECT_STREQ(section["Option 2"].as<const char*>(), "value 2");
+  EXPECT_STREQ(section["oPtion 1"].as<const char*>(), "value 2\\ \\ \\");
 }
 
 TEST(Parse, Numbers) {
   auto section = g_testctx->ini_file["Numbers"];
-  EXPECT_STREQ(section["num"].c_str(), "-1285");
-  EXPECT_STREQ(section["num_bin"].c_str(), "0b01101001");
-  EXPECT_STREQ(section["num_hex"].c_str(), "0x12ae,0xAc2B");
-  EXPECT_STREQ(section["num_oct"].c_str(), "01754");
-  EXPECT_STREQ(section["float1"].c_str(), "-124.45667356");
-  EXPECT_STREQ(section["float2"].c_str(), "+4.1234565E+45");
-  EXPECT_STREQ(section["float3"].c_str(), "412.34565e45");
-  EXPECT_STREQ(section["float4"].c_str(), "-1.1245864E-6");
+  EXPECT_STREQ(section["num"].as<const char*>(), "-1285");
+  EXPECT_STREQ(section["num_bin"].as<const char*>(), "0b01101001");
+  EXPECT_STREQ(section["num_hex"].as<const char*>(), "0x12ae,0xAc2B");
+  EXPECT_STREQ(section["num_oct"].as<const char*>(), "01754");
+  EXPECT_STREQ(section["float1"].as<const char*>(), "-124.45667356");
+  EXPECT_STREQ(section["float2"].as<const char*>(), "+4.1234565E+45");
+  EXPECT_STREQ(section["float3"].as<const char*>(), "412.34565e45");
+  EXPECT_STREQ(section["float4"].as<const char*>(), "-1.1245864E-6");
 }
 
 TEST(Parse, Other) {
   auto section = g_testctx->ini_file["Other"];
-  EXPECT_STREQ(section["bool1"].c_str(), "1");
-  EXPECT_STREQ(section["bool2"].c_str(), "on");
-  EXPECT_STREQ(section["bool3"].c_str(), "f");
+  EXPECT_STREQ(section["bool1"].as<const char*>(), "1");
+  EXPECT_STREQ(section["bool2"].as<const char*>(), "on");
+  EXPECT_STREQ(section["bool3"].as<const char*>(), "f");
 }
 
 TEST(Add, Default) {
-  g_testctx->ini_file.AddKVDefault("testv", "hi");
-  g_testctx->ini_file.GetDefault("testv");
-  EXPECT_STREQ(g_testctx->ini_file.GetDefault("testv").c_str(), "hi");
+  g_testctx->ini_file.GetRootSection().Add("testv", "hi");
+  EXPECT_STREQ(g_testctx->ini_file.GetRootSection()["testv"].as<const char*>(), "hi");
 }
 
 TEST(Add, Kv) {
-  g_testctx->ini_file.AddKV("addedsection", "test", "value");
-  EXPECT_STREQ(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
+  g_testctx->ini_file.AddSection("addedsection").Add("testv", "value");
+  EXPECT_STREQ(g_testctx->ini_file["addedsection"]["testv"].as<const char*>(), "value");
 }
 
 TEST(Remove, Default) {
-  g_testctx->ini_file.RemoveKVDefault("testv");
-  EXPECT_STRNE(g_testctx->ini_file.GetDefault("testv").c_str(), "hi");
-  g_testctx->ini_file.RemoveDefault();
-  EXPECT_STRNE(g_testctx->ini_file.GetDefault("default section value").c_str(), "test value");
+  g_testctx->ini_file.GetRootSection().Remove("testv");
+  EXPECT_THROW(g_testctx->ini_file.GetRootSection()["testv"].as<const char*>(), std::runtime_error);
+  g_testctx->ini_file.GetRootSection().RemoveAll();
+  EXPECT_THROW(g_testctx->ini_file.GetRootSection()["default section value"].as<const char*>(), std::runtime_error);
 }
 
 TEST(Remove, Kv) {
-  g_testctx->ini_file.RemoveKV("addedsection", "test");
-  EXPECT_STRNE(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
+  g_testctx->ini_file["addedsection"].Remove("test");
+  EXPECT_THROW(g_testctx->ini_file["addedsection"]["test"].as<const char*>(), std::runtime_error);
 }
 
 TEST(Remove, Section) {
-  g_testctx->ini_file.AddKV("addedsection", "test", "value");
-  g_testctx->ini_file.RemoveSection("addedsection");
-  EXPECT_STRNE(g_testctx->ini_file["addedsection"]["test"].c_str(), "value");
+  g_testctx->ini_file.AddSection("addedsection");
+  EXPECT_EQ(g_testctx->ini_file.HasSection("addedsection"), true);
+  EXPECT_EQ(g_testctx->ini_file.RemoveSection("addedsection"), true);
+  EXPECT_THROW(g_testctx->ini_file["addedsection"]["test"].as<const char*>(), std::runtime_error);
 }
 
 TEST(Has, Default) {
-  g_testctx->ini_file.AddKVDefault("testv", "hi");
-  EXPECT_EQ(g_testctx->ini_file.HasKVDefault("testv"), true);
-  g_testctx->ini_file.RemoveKVDefault("testv");
+  g_testctx->ini_file.GetRootSection().Add("testv", "hi");
+  EXPECT_EQ(g_testctx->ini_file.GetRootSection().HasValue("testv"), true);
+  EXPECT_EQ(g_testctx->ini_file.GetRootSection().Remove("testv"), true);
 }
 
 TEST(Has, Section) {
@@ -97,7 +97,7 @@ TEST(Has, Section) {
 }
 
 TEST(Has, Kv) {
-  EXPECT_EQ(g_testctx->ini_file.HasKV("Section 1", "Option 1"), true);
+  EXPECT_EQ(g_testctx->ini_file["Section 1"].HasValue("Option 1"), true);
 }
 
 int main(int argc, char** argv) {
@@ -125,14 +125,15 @@ int main(int argc, char** argv) {
                                    "bool1 = 1\n"
                                    "bool2 = on\n"
                                    "bool3=f";
-
   std::ofstream writer("test.ini");
   writer << testfile;
   writer.close();
 
   TestCtx test_ctx;
-  test_ctx.ini_file.Parse("test.ini");
+  test_ctx.ini_file.Parse(testfile, false);
 
   ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  auto ret = RUN_ALL_TESTS();
+  fs::remove("test.ini");
+  return ret;
 }
