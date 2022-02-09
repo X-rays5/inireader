@@ -5,6 +5,8 @@
 #define NDEBUG
 #include "../inireader.hpp"
 #undef NDEBUG
+#else
+#include "../inireader.hpp"
 #endif
 
 struct TestCtx;
