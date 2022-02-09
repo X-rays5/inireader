@@ -309,6 +309,8 @@ namespace ini {
         RemoveComment(line);
         if (line.empty()) continue;
 
+        std::cout << "Line: " << line << std::endl;
+
         auto item = GetItem(line);
         if (!item.first.empty() && !item.second.empty()) {
           if (current_section_.empty()) {
@@ -319,6 +321,7 @@ namespace ini {
             assert(HasSection(current_section_));
             throw std::runtime_error("Section does not have a value with the key: "+current_section_);
           }
+          continue;
         }
 
         if (auto section = GetSection(line); !section.empty()) {
@@ -335,13 +338,18 @@ namespace ini {
      * @param line removes a ini comment from the given string
      */
     static inline void RemoveComment(std::string& line) {
-      std::smatch match;
-      if (std::regex_search(line, match, std::regex(R"((^\;.*)|(^\#.*)|(.*[^\\];)|(.*[^\\]#))"))) {
-        // full string match
-        if (match[0].str() == line) {
-          line.clear();
-        } else {
-          line.erase(match[0].str().size() - 1, line.back());
+      if (line[0] == ';' || line[0] == '#') {
+        line.clear();
+        return;
+      }
+
+      if (auto semicollon_pos = line.find(';'); semicollon_pos != std::string::npos) {
+        if (line[semicollon_pos - 1] != '\\') {
+          line.erase(semicollon_pos, line.back());
+        }
+      } else if (auto hash_pos = line.find('#'); hash_pos != std::string::npos) {
+        if (line[hash_pos - 1] != '\\') {
+          line.erase(hash_pos, line.back());
         }
       }
     }
@@ -363,11 +371,20 @@ namespace ini {
      * @return the name of the section
      */
     static inline std::string GetSection(std::string& line) {
-      std::smatch match;
-      if (std::regex_match(line, match, std::regex(R"(\[(.*)\])"))) {
-        return TRIM_STR(match[1].str(), ' ');
+      Trim(line, ' ');
+      if (line.empty()) return {};
+
+      if (line[0] == '[') {
+        std::uint32_t search_pos = 1;
+        auto close_pos = line.find(']', search_pos);
+        while(close_pos != std::string::npos && line[close_pos - 1] == '\\') {
+          search_pos = close_pos + 1;
+          close_pos = line.find(']', search_pos);
+        }
+        return line.substr(1, close_pos - 1);
+      } else {
+        return {};
       }
-      return {};
     }
 
     /**

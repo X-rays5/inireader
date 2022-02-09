@@ -149,6 +149,7 @@ int main(int argc, char** argv) {
 
   TestCtx test_ctx;
   test_ctx.ini_file.Parse(testfile, false);
+  std::cout << "\n\n";
 
   ::testing::InitGoogleTest(&argc, argv);
   auto ret = RUN_ALL_TESTS();
