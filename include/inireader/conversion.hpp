@@ -8,7 +8,6 @@
 #define TEST_INIREADER_CONVERSION_HPP
 #include <string>
 #include <algorithm>
-#include <regex>
 
 namespace ini {
   namespace conversion {
@@ -59,7 +58,7 @@ namespace ini {
     template<>
     struct AsImpl<std::int8_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^-?[0-9]{1,3}$)"));
+        return val.size() == 1 && val[0] >= std::numeric_limits<std::int8_t>::min() && val[0] <= std::numeric_limits<std::int8_t>::max();
       }
 
       static inline void get(const std::string& val, std::int8_t& out) {
@@ -77,7 +76,7 @@ namespace ini {
     template<>
     struct AsImpl<std::uint8_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^[0-9]{1,3}$)"));
+        return val.size() == 1 && val[0] >= 0 && val[0] <= std::numeric_limits<std::uint8_t>::max();
       }
 
       static inline void get(const std::string& val, int& out) {
@@ -95,7 +94,12 @@ namespace ini {
     template<>
     struct AsImpl<std::int16_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^-?[0-9]{1,5}$)"));
+        try {
+          auto tmp = std::stoi(val);
+          return tmp >= std::numeric_limits<std::int16_t>::min() && tmp <= std::numeric_limits<std::int16_t>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, std::int16_t& out) {
@@ -114,7 +118,11 @@ namespace ini {
     template<>
     struct AsImpl<std::uint16_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^[0-9]{1,5}$)"));
+        try {
+          return std::stoul(val) <= std::numeric_limits<std::uint16_t>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, std::uint16_t& out) {
@@ -133,7 +141,11 @@ namespace ini {
     template<>
     struct AsImpl<std::int32_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^-?[0-9]{1,10}$)"));
+        try {
+          return std::stoi(val) >= std::numeric_limits<std::int32_t>::min() && std::stoi(val) <= std::numeric_limits<std::int32_t>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, std::int32_t& out) {
@@ -148,7 +160,11 @@ namespace ini {
     template<>
     struct AsImpl<std::uint32_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^[0-9]{1,10}$)"));
+        try {
+          return std::stoi(val) >= 0 && std::stoi(val) <= std::numeric_limits<std::uint32_t>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, std::uint32_t& out) {
@@ -163,7 +179,11 @@ namespace ini {
     template<>
     struct AsImpl<std::int64_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^-?[0-9]{1,19}$)"));
+        try {
+          return std::stoll(val) >= std::numeric_limits<std::int64_t>::min() && std::stoll(val) <= std::numeric_limits<std::int64_t>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, std::int64_t& out) {
@@ -178,7 +198,11 @@ namespace ini {
     template<>
     struct AsImpl<std::uint64_t> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^[0-9]{1,19}$)"));
+        try {
+          return std::stoull(val) >= 0 && std::stoull(val) <= std::numeric_limits<std::uint64_t>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, std::uint64_t& out) {
@@ -193,7 +217,11 @@ namespace ini {
     template<>
     struct AsImpl<float> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^-?[0-9]{1,19}(\.[0-9]{1,19})?$)"));
+        try {
+          return std::stof(val) >= -std::numeric_limits<float>::max() && std::stof(val) <= std::numeric_limits<float>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, float& out) {
@@ -208,7 +236,11 @@ namespace ini {
     template<>
     struct AsImpl<double> {
       static inline bool is(const std::string& val) {
-        return std::regex_match(val, std::regex(R"(^-?[0-9]{1,19}(\.[0-9]{1,19})?$)"));
+        try {
+          return std::stod(val) >= -std::numeric_limits<double>::max() && std::stod(val) <= std::numeric_limits<double>::max();
+        } catch (...) {
+          return false;
+        }
       }
 
       static inline void get(const std::string& val, double& out) {
