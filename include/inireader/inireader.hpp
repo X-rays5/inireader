@@ -191,6 +191,11 @@ namespace ini {
         }
       }
 
+      inline std::unordered_map<std::string, IniValue>::iterator begin() noexcept { return items_.begin(); }
+      inline std::unordered_map<std::string, IniValue>::const_iterator cbegin() const noexcept { return items_.cbegin(); }
+      inline std::unordered_map<std::string, IniValue>::iterator end() noexcept { return items_.end(); }
+      inline std::unordered_map<std::string, IniValue>::const_iterator cend() const noexcept { return items_.cend(); }
+
     private:
       std::unordered_map<std::string, IniValue> items_;
     };
@@ -254,6 +259,11 @@ namespace ini {
         throw std::runtime_error("Section: "+section+" does not exist");
       }
     }
+
+    inline std::unordered_map<std::string, IniSection>::iterator begin() noexcept { return root_->sections.begin(); }
+    inline std::unordered_map<std::string, IniSection>::const_iterator cbegin() const noexcept { return root_->sections.cbegin(); }
+    inline std::unordered_map<std::string, IniSection>::iterator end() noexcept { return root_->sections.end(); }
+    inline std::unordered_map<std::string, IniSection>::const_iterator cend() const noexcept { return root_->sections.cend(); }
 
     /**
      * @return a string representation of the ini file
