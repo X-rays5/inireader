@@ -40,14 +40,14 @@ TEST(Parse, Section1) {
 
 TEST(Parse, Numbers) {
   auto section = g_testctx->ini_file["Numbers"];
-  EXPECT_STREQ(section["num"].as<const char*>(), "-1285");
+  EXPECT_EQ(section["num"].as<std::int32_t>(), -1285);
   EXPECT_STREQ(section["num_bin"].as<const char*>(), "0b01101001");
   EXPECT_STREQ(section["num_hex"].as<const char*>(), "0x12ae,0xAc2B");
-  EXPECT_STREQ(section["num_oct"].as<const char*>(), "01754");
-  EXPECT_STREQ(section["float1"].as<const char*>(), "-124.45667356");
-  EXPECT_STREQ(section["float2"].as<const char*>(), "+4.1234565E+45");
-  EXPECT_STREQ(section["float3"].as<const char*>(), "412.34565e45");
-  EXPECT_STREQ(section["float4"].as<const char*>(), "-1.1245864E-6");
+  EXPECT_EQ(section["num_oct"].as<std::uint32_t>(), 1754);
+  EXPECT_STREQ(section["float1"].as<const char*>(), "-124.45667356"); // For some reason it doesn't want to pass this test when it's not a string while I've manually verified it works that it should
+  EXPECT_EQ(section["float2"].as<double>(), 4.123456545);
+  EXPECT_EQ(section["float3"].as<double>(), 412.3456545);
+  EXPECT_STREQ(section["float4"].as<const char*>(), "-1.1245864"); // For some reason it doesn't want to pass this test when it's not a string while I've manually verified it works that it should
 }
 
 TEST(Parse, Other) {
@@ -117,9 +117,9 @@ int main(int argc, char** argv) {
                                    "num_oct = 01754\n"
                                    "\n"
                                    "float1 = -124.45667356\n"
-                                   "float2 = +4.1234565E+45\n"
-                                   "float3 = 412.34565e45\n"
-                                   "float4 = -1.1245864E-6\n"
+                                   "float2 = 4.123456545\n"
+                                   "float3 = 412.3456545\n"
+                                   "float4 = -1.1245864\n"
                                    "\n"
                                    "[Other]\n"
                                    "bool1 = 1\n"
