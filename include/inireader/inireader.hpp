@@ -309,8 +309,6 @@ namespace ini {
         RemoveComment(line);
         if (line.empty()) continue;
 
-        std::cout << "Line: " << line << std::endl;
-
         auto item = GetItem(line);
         if (!item.first.empty() && !item.second.empty()) {
           if (current_section_.empty()) {
