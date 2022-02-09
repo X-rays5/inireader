@@ -1,7 +1,6 @@
 # inireader
 Simple ini parser that uses regex 
 
-For examples look at the [wiki](https://github.com/X-rays5/inireader/wiki)
 # Basic usage
 
 ```cpp
