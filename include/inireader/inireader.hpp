@@ -129,6 +129,10 @@ namespace ini {
         return res;
       }
 
+      [[nodiscard]] size_t Size() const {
+        return items_.size();
+      }
+
       IniValue& operator[](const std::string& key) {
         auto entry = items_.find(key);
 
