@@ -1,5 +1,5 @@
 # inireader
-Simple ini parser that uses regex 
+A simple c++17 header only ini parser/writer.
 
 For examples look at the [wiki](https://github.com/X-rays5/inireader/wiki)
 # Basic usage
