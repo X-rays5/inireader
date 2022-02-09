@@ -11,23 +11,24 @@ For examples look at the [wiki](https://github.com/X-rays5/inireader/wiki)
 
 int main() {
     ini::Parser ini_file;
-    ini_file.Parse("test.ini");
-    if (!ini_file.HasParseError()) {
-        std::string root = ini_file.GetDefault("dsff_SDFsd");
-        std::string float_val = ini_file["Numbers"]["float4"];
+    try {
+        ini_file.load("config.ini");
+        ini_file.GetRootSection()["foo"] = "bar";
+        auto float_val = ini_file["Numbers"]["float"].as<float>();
 
-        std::cout << root << " " << float_val << "\n";
+        std::cout << ini_file.GetRootSection()["foo"] << " " << float_val << "\n";
 
-        ini_file.AddKVDefault("oh", "yes");
-        ini_file.AddKV("hi", "oh", "yes");
+        ini_file.GetRootSection().Add("foo", "bar");
+        ini_file.AddSection("Hello World").Add("foo", "bar");
 
-        std::ofstream writer("test.ini");
+        std::ofstream writer("config.ini");
         if (writer.is_open())
             writer << ini_file.Stringify();
-
-    } else {
-        std::cout << ini_file.GetParseError() << "\n";
+    } catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
-    return 0;
+
+    return EXIT_SUCCESS;
 }
 ```

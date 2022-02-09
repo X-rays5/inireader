@@ -153,6 +153,10 @@ namespace ini {
       return root_->sections.find(section) != root_->sections.end();
     }
 
+    [[nodiscard]] std::uint32_t GetSectionCount() const {
+      return root_->sections.size();
+    }
+
     bool RemoveSection(const std::string& section) {
       if (HasSection(section)) {
         root_->sections.erase(section);
