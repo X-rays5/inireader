@@ -102,6 +102,18 @@ TEST(Has, Kv) {
   EXPECT_EQ(g_testctx->ini_file["Section 1"].HasValue("Option 1"), true);
 }
 
+TEST(Edit, Default) {
+  g_testctx->ini_file.GetRootSection().Add("edittest", 4);
+  EXPECT_EQ(g_testctx->ini_file.GetRootSection().HasValue("edittest"), true);
+  EXPECT_EQ(g_testctx->ini_file.GetRootSection().Remove("edittest"), true);
+}
+
+TEST(Edit, Section) {
+  g_testctx->ini_file.AddSection("testsection").Add("edittest", "wow");
+  EXPECT_EQ(g_testctx->ini_file["testsection"].HasValue("edittest"), true);
+  EXPECT_EQ(g_testctx->ini_file.RemoveSection("testsection"), true);
+}
+
 int main(int argc, char** argv) {
   constexpr const char* testfile = "default section value = test value ; section less\n"
                                    "\n"
