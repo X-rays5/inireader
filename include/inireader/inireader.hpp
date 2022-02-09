@@ -20,7 +20,7 @@ namespace ini {
     /**
      * @param wipe_on_parse wipe the ini file root_ when parsing a new document
      */
-    explicit Parser(bool wipe_on_parse = true) {
+    inline explicit Parser(bool wipe_on_parse = true) {
       wipe_on_parse_ = wipe_on_parse;
       root_ = std::make_unique<IniRoot>();
     }
@@ -67,7 +67,7 @@ namespace ini {
     struct IniValue {
     public:
       template<typename T>
-      [[nodiscard]] T as() const {
+      [[nodiscard]] inline T as() const {
         conversion::AsImpl<T> as;
         T res;
         if (as.is(value_)) {
@@ -79,13 +79,13 @@ namespace ini {
       }
 
       template<typename T>
-      [[nodiscard]] bool is() const {
+      [[nodiscard]] inline bool is() const {
         conversion::AsImpl<T> as;
         return as.is(value_);
       }
 
       template<typename T>
-      IniValue& operator=(const T& value) {
+      inline IniValue& operator=(const T& value) {
         conversion::AsImpl<T> as;
         as.set(value, value_);
         return *this;
@@ -96,14 +96,14 @@ namespace ini {
 
     struct IniSection {
       template<typename T>
-      void Add(const std::string& key, const T& value) {
+      inline void Add(const std::string& key, const T& value) {
         conversion::AsImpl<T> as;
         std::string tmp;
         as.set(value, tmp);
         items_[key] = tmp;
       }
 
-      bool Remove(const std::string& key) {
+      inline bool Remove(const std::string& key) {
         if (items_.find(key) != items_.end()) {
           items_.erase(key);
           return true;
@@ -113,11 +113,11 @@ namespace ini {
         }
       }
 
-      void RemoveAll() {
+      inline void RemoveAll() {
         items_.clear();
       }
 
-      [[nodiscard]] bool HasValue(const std::string& key) const {
+      [[nodiscard]] inline bool HasValue(const std::string& key) const {
         return items_.find(key) != items_.end();
       }
 
@@ -129,11 +129,11 @@ namespace ini {
         return res;
       }
 
-      [[nodiscard]] size_t Size() const {
+      [[nodiscard]] inline size_t Size() const {
         return items_.size();
       }
 
-      IniValue& operator[](const std::string& key) {
+      inline IniValue& operator[](const std::string& key) {
         auto entry = items_.find(key);
 
         if (entry != items_.end()) {
@@ -148,20 +148,20 @@ namespace ini {
       std::unordered_map<std::string, IniValue> items_;
     };
 
-    IniSection& AddSection(const std::string& section) {
+    inline IniSection& AddSection(const std::string& section) {
       root_->sections[section] = IniSection();
       return root_->sections[section];
     }
 
-    [[nodiscard]] bool HasSection(const std::string& section) const {
+    [[nodiscard]] inline bool HasSection(const std::string& section) const {
       return root_->sections.find(section) != root_->sections.end();
     }
 
-    [[nodiscard]] std::uint32_t GetSectionCount() const {
+    [[nodiscard]] inline std::uint32_t GetSectionCount() const {
       return root_->sections.size();
     }
 
-    bool RemoveSection(const std::string& section) {
+    inline bool RemoveSection(const std::string& section) {
       if (HasSection(section)) {
         root_->sections.erase(section);
         return true;
@@ -171,11 +171,11 @@ namespace ini {
       }
     }
 
-    IniSection& GetRootSection() {
+    inline IniSection& GetRootSection() {
       return root_->root_section;
     }
 
-    IniSection& operator[](const std::string& section) {
+    inline IniSection& operator[](const std::string& section) {
       auto entry = root_->sections.find(section);
 
       if (entry != root_->sections.end()) {
