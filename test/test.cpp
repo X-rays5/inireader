@@ -105,12 +105,16 @@ TEST(Has, Kv) {
 TEST(Edit, Default) {
   g_testctx->ini_file.GetRootSection().Add("edittest", 4);
   EXPECT_EQ(g_testctx->ini_file.GetRootSection().HasValue("edittest"), true);
+  g_testctx->ini_file.GetRootSection()["edittest"] = 1234;
+  EXPECT_EQ(g_testctx->ini_file.GetRootSection()["edittest"].as<int>(), 1234);
   EXPECT_EQ(g_testctx->ini_file.GetRootSection().Remove("edittest"), true);
 }
 
 TEST(Edit, Section) {
   g_testctx->ini_file.AddSection("testsection").Add("edittest", "wow");
   EXPECT_EQ(g_testctx->ini_file["testsection"].HasValue("edittest"), true);
+  g_testctx->ini_file["testsection"]["edittest"] = 1234;
+  EXPECT_EQ(g_testctx->ini_file["testsection"]["edittest"].as<int>(), 1234);
   EXPECT_EQ(g_testctx->ini_file.RemoveSection("testsection"), true);
 }
 
