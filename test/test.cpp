@@ -3,10 +3,10 @@
 
 #ifndef NDEBUG
 #define NDEBUG
-#include "../inireader.hpp"
+#include "../include/inireader/inireader.hpp"
 #undef NDEBUG
 #else
-#include "../inireader.hpp"
+#include "../include/inireader/inireader.hpp"
 #endif
 
 struct TestCtx;
@@ -136,6 +136,6 @@ int main(int argc, char** argv) {
 
   ::testing::InitGoogleTest(&argc, argv);
   auto ret = RUN_ALL_TESTS();
-  fs::remove("test.ini");
+  std::filesystem::remove("test.ini");
   return ret;
 }
