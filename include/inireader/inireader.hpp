@@ -44,6 +44,9 @@ namespace ini {
       }
     }
 
+    /**
+     * @param file path to a ini file
+     */
     inline void Parse(std::filesystem::path& file) {
       if (!std::filesystem::exists(file)) {
         assert(!fs::exists(file));
@@ -54,11 +57,17 @@ namespace ini {
       }
     }
 
+    /**
+     * @param file a open stream of a ini file
+     */
     inline void Parse(std::fstream& file) {
       auto lines = ReadFile(file);
       ImplParse(lines);
     }
 
+    /**
+     * @param file a open stream of a ini file
+     */
     inline void Parse(std::ifstream& file) {
       auto lines = ReadFile(file);
       ImplParse(lines);
@@ -66,6 +75,10 @@ namespace ini {
 
     struct IniValue {
     public:
+      /**
+       * @tparam T return type of the value
+       * @return get value as T
+       */
       template<typename T>
       [[nodiscard]] inline T as() const {
         conversion::AsImpl<T> as;
@@ -78,12 +91,19 @@ namespace ini {
         return res;
       }
 
+      /**
+       * @tparam T type of the value
+       * @return check if value is of type T
+       */
       template<typename T>
       [[nodiscard]] inline bool is() const {
         conversion::AsImpl<T> as;
         return as.is(value_);
       }
 
+      /**
+       * @tparam T type of value to assign
+       */
       template<typename T>
       inline IniValue& operator=(const T& value) {
         conversion::AsImpl<T> as;
@@ -95,6 +115,11 @@ namespace ini {
     };
 
     struct IniSection {
+      /**
+       * @tparam T type of the value to add
+       * @param key key of the value
+       * @param value value to add
+       */
       template<typename T>
       inline void Add(const std::string& key, const T& value) {
         conversion::AsImpl<T> as;
@@ -103,6 +128,10 @@ namespace ini {
         items_[key] = tmp;
       }
 
+      /**
+       * @param key key of value to remove
+       * @return success
+       */
       inline bool Remove(const std::string& key) {
         if (items_.find(key) != items_.end()) {
           items_.erase(key);
@@ -113,14 +142,24 @@ namespace ini {
         }
       }
 
+      /**
+       * @note This will remove all the values in the section
+       */
       inline void RemoveAll() {
         items_.clear();
       }
 
+      /**
+       * @param key check if the key exists in the section
+       * @return true if the key exists
+       */
       [[nodiscard]] inline bool HasValue(const std::string& key) const {
         return items_.find(key) != items_.end();
       }
 
+      /**
+       * @return a stringified version of the section
+       */
       [[nodiscard]] inline std::string Stringify() const {
         std::string res;
         for (auto& item : items_) {
@@ -129,10 +168,17 @@ namespace ini {
         return res;
       }
 
+      /**
+       * @return Amount of members in the section
+       */
       [[nodiscard]] inline size_t Size() const {
         return items_.size();
       }
 
+      /**
+       * @param key key of the value to get
+       * @return a reference to the key
+       */
       inline IniValue& operator[](const std::string& key) {
         auto entry = items_.find(key);
 
@@ -148,19 +194,34 @@ namespace ini {
       std::unordered_map<std::string, IniValue> items_;
     };
 
+    /**
+     * @param section name of the section to add
+     * @return a reference to the section
+     */
     inline IniSection& AddSection(const std::string& section) {
       root_->sections[section] = IniSection();
       return root_->sections[section];
     }
 
+    /**
+     * @param section name of the section to check for
+     * @return returns true if the section exists
+     */
     [[nodiscard]] inline bool HasSection(const std::string& section) const {
       return root_->sections.find(section) != root_->sections.end();
     }
 
+    /**
+     * @return count of non root sections
+     */
     [[nodiscard]] inline std::uint32_t GetSectionCount() const {
       return root_->sections.size();
     }
 
+    /**
+     * @param section name of the section to remove
+     * @return returns true if the section is removed
+     */
     inline bool RemoveSection(const std::string& section) {
       if (HasSection(section)) {
         root_->sections.erase(section);
@@ -171,10 +232,17 @@ namespace ini {
       }
     }
 
+    /**
+     * @return a reference to the root section
+     */
     inline IniSection& GetRootSection() {
       return root_->root_section;
     }
 
+    /**
+     * @param section name of the section to get
+     * @return a reference to the section
+     */
     inline IniSection& operator[](const std::string& section) {
       auto entry = root_->sections.find(section);
 
@@ -186,6 +254,9 @@ namespace ini {
       }
     }
 
+    /**
+     * @return a string representation of the ini file
+     */
     [[nodiscard]] inline std::string Stringify() const {
       std::stringstream ss;
 
@@ -209,6 +280,10 @@ namespace ini {
 
   private:
 #define TRIM_STR(str, c) TrimR(Trim(str, c), c)
+
+    /**
+     * @param lines a vector of lines to parse
+     */
     void ImplParse(std::vector<std::string>& lines) {
       if (wipe_on_parse_) {
         current_section_.clear();
@@ -245,6 +320,9 @@ namespace ini {
       }
     }
 
+    /**
+     * @param line removes a ini comment from the given string
+     */
     static inline void RemoveComment(std::string& line) {
       std::smatch match;
       if (std::regex_search(line, match, std::regex(R"((^\;.*)|(^\#.*)|(.*[^\\];)|(.*[^\\]#))"))) {
@@ -257,6 +335,10 @@ namespace ini {
       }
     }
 
+    /**
+     * @param line to check for a valid ini item
+     * @return if it is a valid item a kv
+     */
     static inline std::pair<std::string, std::string> GetItem(std::string& line) {
       std::smatch match;
       if (std::regex_match(line, match, std::regex(R"((.*)= ?(.*))"))) {
@@ -265,6 +347,10 @@ namespace ini {
       return {};
     }
 
+    /**
+     * @param line to check for a valid section
+     * @return the name of the section
+     */
     static inline std::string GetSection(std::string& line) {
       std::smatch match;
       if (std::regex_match(line, match, std::regex(R"(\[(.*)\])"))) {
@@ -273,6 +359,11 @@ namespace ini {
       return {};
     }
 
+    /**
+     * @tparam T the stream type
+     * @param stream a open stream to read from
+     * @return a vector of with the content seperated by new lines
+     */
     template<typename T>
     static inline std::vector<std::string> ReadFile(T& stream) {
       std::string tmp;
@@ -283,6 +374,11 @@ namespace ini {
       return lines;
     }
 
+    /**
+     * @param str to split
+     * @param c to split by
+     * @return a split string inside a vector
+     */
     static inline std::vector<std::string> Split(const std::string& str, char c) {
       std::vector<std::string> res;
       std::string tmp;
@@ -300,6 +396,7 @@ namespace ini {
       return res;
     }
 
+    /// trim the front of the string by given character
     static inline std::string Trim(std::string str, char trim_c) {
       while(str.front() == trim_c) {
         str.erase(0, 1);
@@ -307,6 +404,7 @@ namespace ini {
       return str;
     }
 
+    /// trim the back of the string by given character
     static inline std::string TrimR(std::string str, char trim_c) {
       while (str.back() == trim_c) {
         str.pop_back();
