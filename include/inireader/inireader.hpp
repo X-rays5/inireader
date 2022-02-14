@@ -33,7 +33,7 @@ namespace ini {
     inline void Parse(const std::string& file, bool is_path) {
       if (is_path) {
         if (!std::filesystem::exists(file)) {
-          assert(!fs::exists(file));
+          assert(!std::filesystem::exists(file));
           throw std::runtime_error("File not found");
         } else {
           std::ifstream ini_file(file);
@@ -50,7 +50,7 @@ namespace ini {
      */
     inline void Parse(std::filesystem::path& file) {
       if (!std::filesystem::exists(file)) {
-        assert(!fs::exists(file));
+        assert(!std::filesystem::exists(file));
         throw std::runtime_error("File not found");
       } else {
         std::ifstream ini_file(file);
