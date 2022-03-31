@@ -55,8 +55,12 @@ namespace ini {
 
     template<>
     struct AsImpl<bool> {
-      static inline bool is(const std::string& val) {
-        return val == "TRUE" || val == "YES" || val == "ON" || val == "FALSE" || val == "NO" || val == "OFF";
+      static inline bool is(std::string val) {
+        std::transform(val.begin(), val.end(), val.begin(), [](const char c){
+          return static_cast<char>(::toupper(c));
+        });
+
+        return val == "TRUE" || val == "YES" || val == "ON" || val == "FALSE" || val == "NO" || val == "OFF" || val == "1" || val == "0";
       }
 
       static inline void get(std::string val, bool& out) {
@@ -68,12 +72,10 @@ namespace ini {
           return static_cast<char>(::toupper(c));
         });
 
-        if (val == "TRUE" || val == "YES" || val == "ON") {
+        if (val == "TRUE" || val == "YES" || val == "ON" || val == "1") {
           out = true;
-        } else if (val == "FALSE" || val == "NO" || val == "OFF") {
+        } else if (val == "FALSE" || val == "NO" || val == "OFF" || val == "0") {
           out = false;
-        } else {
-          throw std::runtime_error("Invalid boolean value: " + val);
         }
       }
 

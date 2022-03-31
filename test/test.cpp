@@ -54,9 +54,9 @@ TEST(Parse, Numbers) {
 
 TEST(Parse, Other) {
   auto section = g_testctx->ini_file["Other"];
-  EXPECT_STREQ(section["bool1"].as<const char*>(), "1");
-  EXPECT_STREQ(section["bool2"].as<const char*>(), "on");
-  EXPECT_STREQ(section["bool3"].as<const char*>(), "f");
+  EXPECT_EQ(section["bool1"].as<bool>(), true);
+  EXPECT_EQ(section["bool2"].as<bool>(), true);
+  EXPECT_EQ(section["bool3"].as<bool>(), false);
 }
 
 TEST(Add, Default) {
@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
                                    "[Other]\n"
                                    "bool1 = 1\n"
                                    "bool2 = on\n"
-                                   "bool3=f";
+                                   "bool3=off";
   std::ofstream writer("test.ini");
   writer << testfile;
   writer.close();
