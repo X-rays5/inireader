@@ -151,10 +151,20 @@ namespace ini {
       static inline void get(const std::string& val, std::int32_t& out) {
           // Check if the value is a hex one
           auto is_hex = [val] () {
-              constexpr const char* needle{ "0123456789abcdefABCDEF" };
-              if (val.compare(0, 2, "0x") == 0 && val.size() > 2)
-                  return val.find_first_not_of(needle, 2) == std::string::npos;
-              return val.find_first_not_of(needle, 0) == std::string::npos;
+            if (val.size() < 3) {
+              return false;
+            }
+            if (val[0] != '0' || val[1] != 'x') {
+              return false;
+            }
+
+            for (size_t i = 2; i < val.size(); i++) {
+              if (!isxdigit(val[i])) {
+                return false;
+              }
+            }
+
+            return true;
           };
           if (is_hex())
               out = std::stoul(val, nullptr, 16);
