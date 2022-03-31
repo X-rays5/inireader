@@ -44,7 +44,7 @@ TEST(Parse, Numbers) {
   auto section = g_testctx->ini_file["Numbers"];
   EXPECT_EQ(section["num"].as<std::int32_t>(), -1285);
   EXPECT_STREQ(section["num_bin"].as<const char*>(), "0b01101001");
-  EXPECT_STREQ(section["num_hex"].as<const char*>(), "0x12ae,0xAc2B");
+  EXPECT_EQ(section["num_hex"].as<std::int32_t>(), 4782);
   EXPECT_EQ(section["num_oct"].as<std::uint32_t>(), 1754);
   EXPECT_STREQ(section["float1"].as<const char*>(), "-124.45667356"); // For some reason it doesn't want to pass this test when it's not a string while I've manually verified it works that it should
   EXPECT_EQ(section["float2"].as<double>(), 4.123456545);
@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
                                    "[Numbers]\n"
                                    "num = -1285\n"
                                    "num_bin = 0b01101001\n"
-                                   "num_hex = 0x12ae,0xAc2B\n"
+                                   "num_hex = 0x12ae\n"
                                    "num_oct = 01754\n"
                                    "\n"
                                    "float1 = -124.45667356\n"
