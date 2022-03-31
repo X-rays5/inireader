@@ -149,7 +149,17 @@ namespace ini {
       }
 
       static inline void get(const std::string& val, std::int32_t& out) {
-        out = std::stoi(val);
+          // Check if the value is a hex one
+          auto is_hex = [val] () {
+              constexpr const char* needle{ "0123456789abcdefABCDEF" };
+              if (val.compare(0, 2, "0x") == 0 && val.size() > 2)
+                  return val.find_first_not_of(needle, 2) == std::string::npos;
+              return val.find_first_not_of(needle, 0) == std::string::npos;
+          };
+          if (is_hex())
+              out = std::stoul(val, nullptr, 16);
+          else
+              out = std::stoi(val);
       }
 
       static inline void set(std::int32_t val, std::string& out) {
@@ -161,7 +171,7 @@ namespace ini {
     struct AsImpl<std::uint32_t> {
       static inline bool is(const std::string& val) {
         try {
-          return std::stoi(val) >= 0 && std::stoi(val) <= std::numeric_limits<std::uint32_t>::max();
+          return std::stoi(val) >= 0 && std::stoi(val) <= std::numeric_limits<std::int32_t>::max();
         } catch (...) {
           return false;
         }
