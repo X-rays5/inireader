@@ -9,6 +9,13 @@
 #include <string>
 #include <algorithm>
 
+#ifdef min
+#ifdef max
+#undef min
+#undef max
+#endif
+#endif
+
 namespace ini {
   namespace conversion {
     namespace utility {
