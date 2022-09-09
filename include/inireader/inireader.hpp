@@ -163,11 +163,11 @@ namespace ini {
        * @return a stringified version of the section
        */
       [[nodiscard]] inline std::string Stringify() const {
-        std::string res;
+        std::stringstream res;
         for (auto& item : items_) {
-          res += item.first + "=" + item.second.as<std::string>() + "\n";
+          res << item.first << "=" << item.second.as<std::string>() << "\n";
         }
-        return res;
+        return res.str();
       }
 
       /**
