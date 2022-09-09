@@ -7,7 +7,7 @@ add_subdirectory(vendor/googletest)
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(test_inireader test.cpp ../include/inireader/conversion.hpp)
+add_executable(test_inireader test.cpp)
 
 target_link_libraries(test_inireader gtest gtest_main)
 add_test(test_inireader test_inireader)

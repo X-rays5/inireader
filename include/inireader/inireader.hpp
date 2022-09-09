@@ -49,7 +49,7 @@ namespace ini {
     /**
      * @param file path to a ini file
      */
-    inline void Parse(std::filesystem::path& file) {
+    inline void Parse(const std::filesystem::path& file) {
       if (!std::filesystem::exists(file)) {
         assert(!std::filesystem::exists(file));
         throw std::runtime_error("File not found");
@@ -250,7 +250,7 @@ namespace ini {
      * @param section name of the section to get
      * @return a reference to the section
      */
-    inline IniSection& operator[](const std::string& section) {
+    inline IniSection& GetSection(const std::string& section) {
       auto entry = root_->sections.find(section);
 
       if (entry != root_->sections.end()) {
@@ -259,6 +259,14 @@ namespace ini {
         assert(entry != root_->sections.end());
         throw std::runtime_error("Section: "+section+" does not exist");
       }
+    }
+
+    /**
+     * @param section name of the section to get
+     * @return a reference to the section
+     */
+    inline IniSection& operator[](const std::string& section) {
+      return GetSection(section);
     }
 
     inline std::unordered_map<std::string, IniSection>::iterator begin() noexcept { return root_->sections.begin(); }

@@ -150,12 +150,6 @@ int main(int argc, char** argv) {
   TestCtx test_ctx;
   test_ctx.ini_file.Parse(testfile, false);
 
-  for (auto&& section : test_ctx.ini_file) {
-      for (auto&& kv : section.second) {
-
-      }
-  }
-
   ::testing::InitGoogleTest(&argc, argv);
   auto ret = RUN_ALL_TESTS();
   std::filesystem::remove("test.ini");
