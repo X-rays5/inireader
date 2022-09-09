@@ -221,8 +221,8 @@ namespace ini {
     /**
      * @return count of non root sections
      */
-    [[nodiscard]] inline std::uint32_t GetSectionCount() const {
-      return static_cast<std::uint32_t>(root_->sections.size());
+    [[nodiscard]] inline std::size_t GetSectionCount() const {
+      return root_->sections.size();
     }
 
     /**
