@@ -5,9 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(vendor/googletest)
 enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(test_inireader test.cpp)
+add_executable(${PROJECT_NAME} test.cpp)
 
-target_link_libraries(test_inireader gtest gtest_main)
-add_test(test_inireader test_inireader)
+target_include_directories(${PROJECT_NAME} PRIVATE ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+target_link_libraries(${PROJECT_NAME} gtest gtest_main)
+
+add_test(inireader ${PROJECT_NAME})

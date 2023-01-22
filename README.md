@@ -7,7 +7,7 @@ For examples look at the [wiki](https://github.com/X-rays5/inireader/wiki)
 ```cpp
 #include <iostream>
 #include <fstream>
-#include "inireader.hpp"
+#include <inireader/inireader.hpp>
 
 /*
 config.ini:
@@ -40,4 +40,19 @@ int main() {
 
     return EXIT_SUCCESS;
 }
+```
+# CMake usage
+```cmake
+cmake_minimum_required(VERSION 3.24)
+project(example)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_subdirectory(inireader)
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+# Include the inireader headers via the cmake INTERFACE library API.
+target_link_libraries(${PROJECT_NAME} PRIVATE inireader::inireader)
+
 ```
