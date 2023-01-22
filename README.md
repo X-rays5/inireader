@@ -52,7 +52,7 @@ add_subdirectory(inireader)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-# Include the inireader headers via the cmake INTERFACE library.
+# Include the inireader headers via the cmake INTERFACE library API.
 target_link_libraries(${PROJECT_NAME} PRIVATE inireader::inireader)
 
 ```
