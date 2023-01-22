@@ -33,6 +33,14 @@ TEST(Parse, DefaultSection) {
   EXPECT_STREQ(g_testctx->ini_file.GetRootSection()["default section value"].as<const char*>(), "test value");
 }
 
+TEST(Parse, CommentVal) {
+  auto section = g_testctx->ini_file["comment_val"];
+
+  EXPECT_STREQ(section["val1"].as<const char*>(), "##hello");
+  EXPECT_STREQ(section["val2##"].as<const char*>(), "world");
+  EXPECT_STREQ(section["val3"].as<const char*>(), "he##llo");
+}
+
 TEST(Parse, Section1) {
   auto section = g_testctx->ini_file["Section 1"];
   EXPECT_STREQ(section["Option 1"].as<const char*>(), "value 1");
@@ -135,6 +143,10 @@ TEST(Edit, Reference) {
 int main(int argc, char** argv) {
   constexpr const char* testfile = "default section value = test value ; section less\n"
                                    "\n"
+                                   "[comment_val]\n"
+                                   "val1 = \"##hello\"\n"
+                                   "val2## = world\n"
+                                   "val3 = he##llo\n"
                                    "[Section 1]\n"
                                    "; comment\n"
                                    "# comment2\n"

@@ -355,19 +355,22 @@ namespace ini {
      * @param line removes a ini comment from the given string
      */
     static inline void RemoveComment(std::string& line) {
-      if (line[0] == ';' || line[0] == '#') {
-        line.clear();
-        return;
+      for (auto&& c : line) {
+        if (c == ';' || c == '#') {
+          line.clear();
+          return;
+        } else if (c != ' ') {
+          break;
+        }
       }
 
-      if (auto semicollon_pos = line.find(';'); semicollon_pos != std::string::npos) {
-        if (line[semicollon_pos - 1] != '\\') {
-          line.erase(semicollon_pos, line.back());
-        }
-      } else if (auto hash_pos = line.find('#'); hash_pos != std::string::npos) {
-        if (line[hash_pos - 1] != '\\') {
-          line.erase(hash_pos, line.back());
-        }
+      std::size_t pos{};
+      if (pos = line.find(';'); pos != std::string::npos) {
+        if (line[pos-1] == ' ')
+          line.erase(pos);
+      } else if (pos = line.find('#'); pos != std::string::npos) {
+        if (line[pos-1] == ' ')
+          line.erase(pos);
       }
     }
 
@@ -378,7 +381,7 @@ namespace ini {
     static inline std::pair<std::string, std::string> GetItem(std::string& line) {
       std::smatch match;
       if (std::regex_match(line, match, std::regex(R"((.*)= ?(.*))"))) {
-        return std::make_pair(TRIM_STR(match[1].str(), ' '), TRIM_STR(match[2].str(), ' '));
+        return std::make_pair(TRIM_STR(match[1].str(), ' '), TRIM_STR(TRIM_STR(match[2].str(), '"'), ' '));
       }
       return {};
     }
