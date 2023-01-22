@@ -46,10 +46,10 @@ TEST(Parse, Numbers) {
   EXPECT_STREQ(section["num_bin"].as<const char*>(), "0b01101001");
   EXPECT_EQ(section["num_hex"].as<std::int32_t>(), 4782);
   EXPECT_EQ(section["num_oct"].as<std::uint32_t>(), 1754);
-  EXPECT_STREQ(section["float1"].as<const char*>(), "-124.45667356"); // For some reason it doesn't want to pass this test when it's not a string while I've manually verified it works that it should
+  EXPECT_EQ(section["float1"].as<double>(), -124.45667356);
   EXPECT_EQ(section["float2"].as<double>(), 4.123456545);
   EXPECT_EQ(section["float3"].as<double>(), 412.3456545);
-  EXPECT_STREQ(section["float4"].as<const char*>(), "-1.1245864"); // For some reason it doesn't want to pass this test when it's not a string while I've manually verified it works that it should
+  EXPECT_EQ(section["float4"].as<double>(), -1.1245864);
 }
 
 TEST(Parse, Other) {
