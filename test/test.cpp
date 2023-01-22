@@ -118,6 +118,20 @@ TEST(Edit, Section) {
   EXPECT_EQ(g_testctx->ini_file.RemoveSection("testsection"), true);
 }
 
+TEST(Edit, Reference) {
+  ini::Parser::IniSection& section = g_testctx->ini_file.AddSection("edit_ref");
+  section.Add("test_num", 1234);
+  section.Add("test_str", "hello");
+
+  EXPECT_TRUE(g_testctx->ini_file["edit_ref"]["test_num"].is<std::int32_t>());
+  EXPECT_TRUE(g_testctx->ini_file["edit_ref"]["test_str"].is<std::string>());
+  EXPECT_EQ(g_testctx->ini_file["edit_ref"]["test_num"].as<std::int32_t>(), 1234);
+  EXPECT_EQ(g_testctx->ini_file["edit_ref"]["test_str"].as<std::string>(), "hello");
+
+  section.Remove("test_num");
+  EXPECT_FALSE(g_testctx->ini_file["edit_ref"].HasValue("test_num"));
+}
+
 int main(int argc, char** argv) {
   constexpr const char* testfile = "default section value = test value ; section less\n"
                                    "\n"
