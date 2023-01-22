@@ -37,8 +37,13 @@ namespace ini {
           assert(!std::filesystem::exists(file));
           throw std::runtime_error("File not found");
         } else {
-          std::ifstream ini_file(file);
-          Parse(ini_file);
+            if (!std::filesystem::is_regular_file(file)) {
+                assert(!std::filesystem::is_regular_file(file));
+                throw std::runtime_error("Not a regular file");
+            } else {
+                std::ifstream ini_file(file);
+                Parse(ini_file);
+            }
         }
       } else {
         auto lines = Split(file, '\n');
@@ -54,8 +59,13 @@ namespace ini {
         assert(!std::filesystem::exists(file));
         throw std::runtime_error("File not found");
       } else {
-        std::ifstream ini_file(file);
-        Parse(ini_file);
+        if (!std::filesystem::is_regular_file(file)) {
+            assert(!std::filesystem::is_regular_file(file));
+            throw std::runtime_error("Not a regular file");
+        } else {
+            std::ifstream ini_file(file);
+            Parse(ini_file);
+        }
       }
     }
 

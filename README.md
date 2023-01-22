@@ -9,14 +9,22 @@ For examples look at the [wiki](https://github.com/X-rays5/inireader/wiki)
 #include <fstream>
 #include "inireader.hpp"
 
+/*
+config.ini:
+
+foo=bar
+[Numbers]
+float=3.14
+*/
+
 int main() {
     ini::Parser ini_file;
     try {
-        ini_file.load("config.ini");
+        ini_file.Parse("config.ini");
         ini_file.GetRootSection()["foo"] = "bar";
         auto float_val = ini_file["Numbers"]["float"].as<float>();
 
-        std::cout << ini_file.GetRootSection()["foo"] << " " << float_val << "\n";
+        std::cout << ini_file.GetRootSection()["foo"].as<std::string>() << " " << float_val << "\n";
 
         ini_file.GetRootSection().Add("foo", "bar");
         ini_file.AddSection("Hello World").Add("foo", "bar");
@@ -24,6 +32,7 @@ int main() {
         std::ofstream writer("config.ini");
         if (writer.is_open())
             writer << ini_file.Stringify();
+        writer.close();
     } catch (std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;

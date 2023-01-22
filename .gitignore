@@ -1,2 +1,14 @@
 **/.idea
 **/cmake-build*
+
+# Visual Studio cache/options directory
+.vs/
+
+# Build results
+x86-[Dd]ebug/
+x86-[Rr]elease/
+x64-[Dd]ebug/
+x64-[Rr]elease/
+
+# CMakeSettings.json schema reference
+[Cc]make[Ss]ettings.json
