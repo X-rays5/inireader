@@ -40,7 +40,7 @@ namespace ini {
         return std::stoll(str, nullptr, 16);
       }
       
-      inline std::int64_t HexToUInt64(const std::string& str) {
+      inline std::uint64_t HexToUInt64(const std::string& str) {
         return std::stoull(str, nullptr, 16);
       }
 
@@ -391,7 +391,7 @@ namespace ini {
       }
 
       static inline void get(const std::string& val, std::uint64_t& out) {
-        out = utility::IsHex(val) ? static_cast<std::uint64_t>(utility::HexToUInt64(val)) : static_cast<std::uint64_t>(std::stoull(val));
+        out = utility::IsHex(val) ? utility::HexToUInt64(val) : std::stoull(val);
       }
 
       static inline void set(std::uint64_t val, std::string& out) {
