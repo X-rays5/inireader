@@ -54,7 +54,7 @@ TEST(Parse, Numbers) {
   EXPECT_STREQ(section["num_bin"].as<const char*>(), "0b01101001");
   EXPECT_EQ(section["num_hex"].as<std::int32_t>(), 4782);
   EXPECT_EQ(section["num_oct"].as<std::uint32_t>(), 1754);
-  EXPECT_EQ(section["num_uint64"].as<std::uint64_t>(), 1122334400000000i64);
+  EXPECT_EQ(section["num_uint64"].as<std::uint64_t>(), 1122334400000000ull);
   EXPECT_EQ(section["float1"].as<double>(), -124.45667356);
   EXPECT_EQ(section["float2"].as<double>(), 4.123456545);
   EXPECT_EQ(section["float3"].as<double>(), 412.3456545);
