@@ -135,6 +135,7 @@ TEST(Edit, Reference) {
   EXPECT_TRUE(g_testctx->ini_file["edit_ref"]["test_str"].is<std::string>());
   EXPECT_EQ(g_testctx->ini_file["edit_ref"]["test_num"].as<std::int32_t>(), 1234);
   EXPECT_EQ(g_testctx->ini_file["edit_ref"]["test_str"].as<std::string>(), "hello");
+  EXPECT_EQ(g_testctx->ini_file["edit_ref"]["test_str"].as<std::string_view>(), "hello");
 
   section.Remove("test_num");
   EXPECT_FALSE(g_testctx->ini_file["edit_ref"].HasValue("test_num"));

@@ -160,6 +160,21 @@ namespace ini {
     };
 
     template<>
+    struct AsImpl<std::string_view> {
+      static inline bool is(const std::string& val) {
+        return true;
+      }
+
+      static inline void get(const std::string& val, std::string_view& out) {
+        out = std::string_view(val.data(), val.size());
+      }
+
+      static inline void set(const std::string_view& val, std::string& out) {
+        out = val;
+      }
+    };
+
+    template<>
     struct AsImpl<std::u16string> {
       static inline bool is(const std::string& val) {
         return true;

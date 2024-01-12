@@ -6,6 +6,7 @@
 #ifndef INIREADER_HPP
 #define INIREADER_HPP
 #include <string>
+#include <string_view>
 #include <regex>
 #include <filesystem>
 #include <fstream>
