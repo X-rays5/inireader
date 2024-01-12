@@ -181,6 +181,7 @@ int main(int argc, char** argv) {
                                    "num_bin = 0b01101001\n"
                                    "num_hex = 0x12ae\n"
                                    "num_oct = 01754\n"
+                                   "num_uint64 = 1122334400000000\n"
                                    "\n"
                                    "float1 = -124.45667356\n"
                                    "float2 = 4.123456545\n"
