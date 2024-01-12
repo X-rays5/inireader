@@ -39,6 +39,10 @@ namespace ini {
       inline std::int64_t HexToInt64(const std::string& str) {
         return std::stoll(str, nullptr, 16);
       }
+      
+      inline std::int64_t HexToUInt64(const std::string& str) {
+        return std::stoull(str, nullptr, 16);
+      }
 
       // Reference: https://github.com/hermanzdosilovic/petiteutf8
       template<typename CharType = char16_t>
@@ -379,7 +383,7 @@ namespace ini {
     struct AsImpl<std::uint64_t> {
       static inline bool is(const std::string& val) {
         try {
-          std::int64_t num = utility::IsHex(val) ? utility::HexToInt64(val) : std::stoi(val);
+          std::uint64_t num = utility::IsHex(val) ? utility::HexToUInt64(val) : std::stoull(val);
           return num >= 0 && num <= std::numeric_limits<std::uint64_t>::max();
         } catch (...) {
           return false;
@@ -387,7 +391,7 @@ namespace ini {
       }
 
       static inline void get(const std::string& val, std::uint64_t& out) {
-        out = utility::IsHex(val) ? static_cast<std::uint64_t>(utility::HexToInt64(val)) : static_cast<std::uint64_t>(std::stoi(val));
+        out = utility::IsHex(val) ? static_cast<std::uint64_t>(utility::HexToUInt64(val)) : static_cast<std::uint64_t>(std::stoull(val));
       }
 
       static inline void set(std::uint64_t val, std::string& out) {
