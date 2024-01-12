@@ -6,6 +6,7 @@
 #ifndef INIREADER_HPP
 #define INIREADER_HPP
 #include <string>
+#include <string_view>
 #include <regex>
 #include <filesystem>
 #include <fstream>
@@ -211,6 +212,8 @@ namespace ini {
       std::unordered_map<std::string, IniValue> items_;
     };
 
+    using IniSections = std::unordered_map<std::string, IniSection>;
+
     /**
      * @param section name of the section to add
      * @return a reference to the section
@@ -268,6 +271,19 @@ namespace ini {
       } else {
         assert(entry != root_->sections.end());
         throw std::runtime_error("Section: "+section+" does not exist");
+      }
+    }
+
+    /**
+     * @return a reference to all the available sections
+     */
+    inline IniSections& GetSections()
+    {
+      if (root_->sections.size() > 0) {
+         return root_->sections;
+      } else {
+        assert(root_->sections.size() == 0);
+        throw std::runtime_error("No sections found");
       }
     }
 
