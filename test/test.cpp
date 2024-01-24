@@ -43,6 +43,7 @@ TEST(Parse, CommentVal) {
 
 TEST(Parse, Section1) {
   auto section = g_testctx->ini_file["Section 1"];
+  EXPECT_STREQ(section["test_line_break"].as<const char*>(), "test1");
   EXPECT_STREQ(section["Option 1"].as<const char*>(), "value 1");
   EXPECT_STREQ(section["Option 2"].as<const char*>(), "value 2");
   EXPECT_STREQ(section["oPtion 1"].as<const char*>(), "value 2\\ \\ \\");
@@ -172,6 +173,7 @@ int main(int argc, char** argv) {
                                    "[Section 1]\n"
                                    "; comment\n"
                                    "# comment2\n"
+                                   "test_line_break = test1\r"
                                    "Option 1 = value 1                     ; option 'Option 1' has value 'value 1'\n"
                                    "Option 2 =  value 2                     # option 'Option 2' has value 'value 2'\n"
                                    "oPtion 1    =  value 2\\ \\ \\          ; option 'oPtion 1' has value ' value 2   ', 'oPtion 1' and 'Option 1' are different\n"

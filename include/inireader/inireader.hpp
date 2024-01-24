@@ -39,7 +39,7 @@ namespace ini {
         std::ifstream ini_file(file);
         Parse(ini_file);
       } else {
-        auto lines = Split(file, '\n');
+        auto lines = Split(file);
         ImplParse(lines);
       }
     }
@@ -405,7 +405,7 @@ namespace ini {
      */
     static std::pair<std::string, std::string> GetItem(const std::string& line) {
       std::smatch match;
-      if (std::regex_match(line, match, std::regex(R"((.*)= ?(.*)[\S\s]*)"))) {
+      if (std::regex_match(line, match, std::regex(R"((.*)= ?(.*)*)"))) {
         return std::make_pair(TRIM_STR(match[1].str(), ' '), TRIM_STR(TRIM_STR(match[2].str(), '"'), ' '));
       }
       return {};
@@ -442,21 +442,28 @@ namespace ini {
       std::string tmp;
       std::vector<std::string> lines;
       while (std::getline(stream, tmp)) {
-        lines.emplace_back(tmp);
+        std::smatch match;
+
+        // Check if the line contains a line-break.
+        // Split it into two lines accordingly.
+        if (std::regex_match(tmp, match, std::regex(R"((.*)\r(.*))"))) {
+            lines.emplace_back(match[1].str());
+            lines.emplace_back(match[2].str());
+        } else
+          lines.emplace_back(tmp);
       }
       return lines;
     }
 
     /**
      * @param str to split
-     * @param c to split by
      * @return a split string inside a vector
      */
-    static std::vector<std::string> Split(const std::string& str, char c) {
+    static std::vector<std::string> Split(const std::string& str) {
       std::vector<std::string> res;
       std::string tmp;
       for (auto& ch : str) {
-        if (ch == c) {
+        if (ch == '\n' || ch == '\r') {
           res.emplace_back(tmp);
           tmp.clear();
         } else {
