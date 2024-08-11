@@ -405,7 +405,7 @@ namespace ini {
      */
     static std::pair<std::string, std::string> GetItem(const std::string& line) {
       std::smatch match;
-      if (std::regex_match(line, match, std::regex(R"((.*)= ?(.*))"))) {
+      if (std::regex_match(line, match, std::regex(R"((.*?)\s*=\s*(.*))"))) {
         return std::make_pair(TRIM_STR(match[1].str(), ' '), TRIM_STR(TRIM_STR(match[2].str(), '"'), ' '));
       }
       return {};
