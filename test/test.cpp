@@ -47,6 +47,8 @@ TEST(Parse, Section1) {
   EXPECT_STREQ(section["Option 1"].as<const char*>(), "value 1");
   EXPECT_STREQ(section["Option 2"].as<const char*>(), "value 2");
   EXPECT_STREQ(section["oPtion 1"].as<const char*>(), "value 2\\ \\ \\");
+  EXPECT_STREQ(section["Option 3"].as<const char*>(), "value 3 = not value 2");
+  EXPECT_STREQ(section["option 3"].as<const char*>(), "value 3 = not value 2 = not value 1\\");
 }
 
 TEST(Parse, Numbers) {
@@ -177,6 +179,8 @@ int main(int argc, char** argv) {
                                    "Option 1 = value 1                     ; option 'Option 1' has value 'value 1'\n"
                                    "Option 2 =  value 2                     # option 'Option 2' has value 'value 2'\n"
                                    "oPtion 1    =  value 2\\ \\ \\          ; option 'oPtion 1' has value ' value 2   ', 'oPtion 1' and 'Option 1' are different\n"
+                                   "Option 3= value 3 = not value 2\n"
+                                   "option 3  =value 3 = not value 2 = not value 1\\\n"
                                    "\n"
                                    "[Numbers]\n"
                                    "num = -1285\n"
