@@ -1,18 +1,14 @@
-//
-// Created by X-ray on 5/18/2021.
-//
 #pragma once
 
 #ifndef INIREADER_HPP
 #define INIREADER_HPP
+
 #include <string>
 #include <string_view>
 #include <regex>
 #include <filesystem>
 #include <fstream>
-#include <cassert>
 #include <memory>
-#include <utility>
 #include <sstream>
 #include <unordered_map>
 #include "conversion.hpp"
@@ -21,7 +17,8 @@ namespace ini {
   class Parser {
   public:
     /**
-     * @param wipe_on_parse wipe the ini file root_ when parsing a new document
+     * @brief Constructor for the Parser class.
+     * @param wipe_on_parse If true, the ini file root will be wiped when parsing a new document.
      */
     explicit Parser(const bool wipe_on_parse = true) {
       wipe_on_parse_ = wipe_on_parse;
@@ -29,8 +26,9 @@ namespace ini {
     }
 
     /**
-     * @param file path/contents of ini file
-     * @param is_path is the file a path or contents of a ini file
+     * @brief Parses an ini file.
+     * @param file Path or contents of the ini file.
+     * @param is_path If true, the file parameter is treated as a path; otherwise, it is treated as the contents of an ini file.
      */
     void Parse(const std::string& file, const bool is_path) {
       if (is_path) {
@@ -45,7 +43,8 @@ namespace ini {
     }
 
     /**
-     * @param file path to a ini file
+     * @brief Parses an ini file from a given path.
+     * @param file Path to the ini file.
      */
     void Parse(const std::filesystem::path& file) {
       CheckValidFile(file);
@@ -55,7 +54,8 @@ namespace ini {
     }
 
     /**
-     * @param file a open stream of a ini file
+     * @brief Parses an ini file from an open stream.
+     * @param file Open stream of the ini file.
      */
     void Parse(std::fstream& file) {
       auto lines = ReadFile(file);
@@ -63,7 +63,8 @@ namespace ini {
     }
 
     /**
-     * @param file a open stream of a ini file
+     * @brief Parses an ini file from an open stream.
+     * @param file Open stream of the ini file.
      */
     void Parse(std::ifstream& file) {
       auto lines = ReadFile(file);
@@ -73,8 +74,9 @@ namespace ini {
     struct IniValue {
     public:
       /**
-       * @tparam T return type of the value
-       * @return get value as T
+       * @brief Gets the value as a specified type.
+       * @tparam T Return type of the value.
+       * @return Value as type T.
        */
       template <typename T>
       [[nodiscard]] T as() const {
@@ -89,8 +91,9 @@ namespace ini {
       }
 
       /**
-       * @tparam T type of the value
-       * @return check if value is of type T
+       * @brief Checks if the value is of a specified type.
+       * @tparam T Type to check.
+       * @return True if the value is of type T, false otherwise.
        */
       template <typename T>
       [[nodiscard]] bool is() const {
@@ -99,7 +102,10 @@ namespace ini {
       }
 
       /**
-       * @tparam T type of value to assign
+       * @brief Assigns a value of a specified type.
+       * @tparam T Type of the value to assign.
+       * @param value Value to assign.
+       * @return Reference to the IniValue object.
        */
       template <typename T>
       IniValue& operator=(const T& value) {
@@ -114,9 +120,10 @@ namespace ini {
 
     struct IniSection {
       /**
-       * @tparam T type of the value to add
-       * @param key key of the value
-       * @param value value to add
+       * @brief Adds a key-value pair to the section.
+       * @tparam T Type of the value to add.
+       * @param key Key of the value.
+       * @param value Value to add.
        */
       template <typename T>
       void Add(const std::string& key, const T& value) {
@@ -127,8 +134,9 @@ namespace ini {
       }
 
       /**
-       * @param key key of value to remove
-       * @return success
+       * @brief Removes a key-value pair from the section.
+       * @param key Key of the value to remove.
+       * @return True if the key-value pair was removed, false otherwise.
        */
       bool Remove(const std::string& key) {
         if (items_.find(key) != items_.end()) {
@@ -141,22 +149,24 @@ namespace ini {
       }
 
       /**
-       * @note This will remove all the values in the section
+       * @brief Removes all key-value pairs from the section.
        */
       void RemoveAll() {
         items_.clear();
       }
 
       /**
-       * @param key check if the key exists in the section
-       * @return true if the key exists
+       * @brief Checks if a key exists in the section.
+       * @param key Key to check.
+       * @return True if the key exists, false otherwise.
        */
       [[nodiscard]] bool HasValue(const std::string& key) const {
         return items_.find(key) != items_.end();
       }
 
       /**
-       * @return a stringified version of the section
+       * @brief Converts the section to a string representation.
+       * @return String representation of the section.
        */
       [[nodiscard]] std::string Stringify() const {
         std::stringstream res;
@@ -168,15 +178,18 @@ namespace ini {
       }
 
       /**
-       * @return Amount of members in the section
+       * @brief Gets the number of key-value pairs in the section.
+       * @return Number of key-value pairs in the section.
        */
       [[nodiscard]] size_t Size() const {
         return items_.size();
       }
 
       /**
-       * @param key key of the value to get
-       * @return a reference to the key
+       * @brief Gets a reference to a value by key.
+       * @param key Key of the value to get.
+       * @return Reference to the value.
+       * @throws std::runtime_error if the key does not exist.
        */
       [[nodiscard]] IniValue& operator[](const std::string& key) {
         const auto entry = items_.find(key);
@@ -212,8 +225,9 @@ namespace ini {
     using IniSections = std::unordered_map<std::string, IniSection>;
 
     /**
-     * @param section name of the section to add
-     * @return a reference to the section
+     * @brief Adds a section to the ini file.
+     * @param section Name of the section to add.
+     * @return Reference to the added section.
      */
     IniSection& AddSection(const std::string& section) const {
       root_->sections[section] = IniSection();
@@ -221,23 +235,26 @@ namespace ini {
     }
 
     /**
-     * @param section name of the section to check for
-     * @return returns true if the section exists
+     * @brief Checks if a section exists in the ini file.
+     * @param section Name of the section to check.
+     * @return True if the section exists, false otherwise.
      */
     [[nodiscard]] bool HasSection(const std::string& section) const {
       return root_->sections.find(section) != root_->sections.end();
     }
 
     /**
-     * @return count of non root sections
+     * @brief Gets the number of sections in the ini file.
+     * @return Number of sections in the ini file.
      */
     [[nodiscard]] std::size_t GetSectionCount() const {
       return root_->sections.size();
     }
 
     /**
-     * @param section name of the section to remove
-     * @return returns true if the section is removed
+     * @brief Removes a section from the ini file.
+     * @param section Name of the section to remove.
+     * @return True if the section was removed, false otherwise.
      */
     bool RemoveSection(const std::string& section) const {
       if (HasSection(section)) {
@@ -250,15 +267,18 @@ namespace ini {
     }
 
     /**
-     * @return a reference to the root section
+     * @brief Gets a reference to the root section.
+     * @return Reference to the root section.
      */
     [[nodiscard]] IniSection& GetRootSection() const {
       return root_->root_section;
     }
 
     /**
-     * @param section name of the section to get
-     * @return a reference to the section
+     * @brief Gets a reference to a section by name.
+     * @param section Name of the section to get.
+     * @return Reference to the section.
+     * @throws std::runtime_error if the section does not exist.
      */
     [[nodiscard]] IniSection& GetSection(const std::string& section) const {
       const auto entry = root_->sections.find(section);
@@ -272,7 +292,9 @@ namespace ini {
     }
 
     /**
-     * @return a reference to all the available sections
+     * @brief Gets a reference to all the sections in the ini file.
+     * @return Reference to all the sections.
+     * @throws std::runtime_error if no sections are found.
      */
     [[nodiscard]] IniSections& GetSections() const {
       if (!root_->sections.empty()) {
@@ -284,8 +306,9 @@ namespace ini {
     }
 
     /**
-     * @param section name of the section to get
-     * @return a reference to the section
+     * @brief Gets a reference to a section by name.
+     * @param section Name of the section to get.
+     * @return Reference to the section.
      */
     [[nodiscard]] IniSection& operator[](const std::string& section) const {
       return GetSection(section);
@@ -308,7 +331,8 @@ namespace ini {
     }
 
     /**
-     * @return a string representation of the ini file
+     * @brief Converts the ini file to a string representation.
+     * @return String representation of the ini file.
      */
     [[nodiscard]] std::string Stringify() const {
       std::stringstream ss;
@@ -335,7 +359,8 @@ namespace ini {
 #define TRIM_STR(str, c) TrimR(Trim(str, c), c)
 
     /**
-     * @param lines a vector of lines to parse
+     * @brief Parses the lines of an ini file.
+     * @param lines Vector of lines to parse.
      */
     void ImplParse(std::vector<std::string>& lines) {
       if (wipe_on_parse_) {
@@ -377,7 +402,8 @@ namespace ini {
     }
 
     /**
-     * @param line removes a ini comment from the given string
+     * @brief Removes a comment from a line.
+     * @param line Line to remove the comment from.
      */
     static void RemoveComment(std::string& line) {
       for (auto&& c : line) {
@@ -400,8 +426,9 @@ namespace ini {
     }
 
     /**
-     * @param line to check for a valid ini item
-     * @return if it is a valid item a kv
+     * @brief Gets a key-value pair from a line.
+     * @param line Line to check for a valid ini item.
+     * @return Key-value pair if it is a valid item, empty pair otherwise.
      */
     static std::pair<std::string, std::string> GetItem(const std::string& line) {
       std::smatch match;
@@ -412,8 +439,9 @@ namespace ini {
     }
 
     /**
-     * @param line to check for a valid section
-     * @return the name of the section
+     * @brief Gets the name of a section from a line.
+     * @param line Line to check for a valid section.
+     * @return Name of the section if it is a valid section, empty string otherwise.
      */
     static std::string GetSection(std::string& line) {
       Trim(line, ' ');
@@ -433,9 +461,10 @@ namespace ini {
     }
 
     /**
-     * @tparam T the stream type
-     * @param stream a open stream to read from
-     * @return a vector of with the content seperated by new lines
+     * @brief Reads the contents of a file into a vector of lines.
+     * @tparam T Stream type.
+     * @param stream Open stream to read from.
+     * @return Vector of lines.
      */
     template <typename T>
     static std::vector<std::string> ReadFile(T& stream) {
@@ -456,8 +485,9 @@ namespace ini {
     }
 
     /**
-     * @param str to split
-     * @return a split string inside a vector
+     * @brief Splits a string into a vector of lines.
+     * @param str String to split.
+     * @return Vector of lines.
      */
     static std::vector<std::string> Split(const std::string& str) {
       std::vector<std::string> res;
@@ -476,7 +506,12 @@ namespace ini {
       return res;
     }
 
-    /// trim the front of the string by given character
+    /**
+     * @brief Trims the front of a string by a given character.
+     * @param str String to trim.
+     * @param trim_c Character to trim.
+     * @return Trimmed string.
+     */
     static std::string Trim(std::string str, char trim_c) {
       while (str.front() == trim_c) {
         str.erase(0, 1);
@@ -484,7 +519,12 @@ namespace ini {
       return str;
     }
 
-    /// trim the back of the string by given character
+    /**
+     * @brief Trims the back of a string by a given character.
+     * @param str String to trim.
+     * @param trim_c Character to trim.
+     * @return Trimmed string.
+     */
     static std::string TrimR(std::string str, char trim_c) {
       while (str.back() == trim_c) {
         str.pop_back();
@@ -493,7 +533,11 @@ namespace ini {
       return str;
     }
 
-    /// Check if given path is a file that can be parsed
+    /**
+     * @brief Checks if a given path is a valid file.
+     * @param file Path to check.
+     * @throws std::runtime_error if the file is not found or is not a regular file.
+     */
     static void CheckValidFile(const std::filesystem::path& file) {
       if (!std::filesystem::exists(file)) {
         assert(!std::filesystem::exists(file));
