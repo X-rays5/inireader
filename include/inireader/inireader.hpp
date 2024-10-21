@@ -1,10 +1,3 @@
-//
-// Created by X-ray on 5/18/2021.
-//
-#pragma once
-
-#ifndef INIREADER_HPP
-#define INIREADER_HPP
 #include <string>
 #include <string_view>
 #include <regex>
@@ -108,8 +101,23 @@ namespace ini {
         return *this;
       }
 
+      /**
+       * @return the comment associated with the value
+       */
+      [[nodiscard]] const std::string& GetComment() const {
+        return comment_;
+      }
+
+      /**
+       * @param comment the comment to set
+       */
+      void SetComment(const std::string& comment) {
+        comment_ = comment;
+      }
+
     private:
       std::string value_;
+      std::string comment_;
     };
 
     struct IniSection {
@@ -161,7 +169,11 @@ namespace ini {
       [[nodiscard]] std::string Stringify() const {
         std::stringstream res;
         for (auto& item : items_) {
-          res << item.first << "=" << item.second.as<std::string>() << "\n";
+          res << item.first << "=" << item.second.as<std::string>();
+          if (!item.second.GetComment().empty()) {
+            res << " ;" << item.second.GetComment();
+          }
+          res << "\n";
         }
 
         return res.str();
@@ -205,8 +217,23 @@ namespace ini {
         return items_.cend();
       }
 
+      /**
+       * @return the comment associated with the section
+       */
+      [[nodiscard]] const std::string& GetComment() const {
+        return comment_;
+      }
+
+      /**
+       * @param comment the comment to set
+       */
+      void SetComment(const std::string& comment) {
+        comment_ = comment;
+      }
+
     private:
       std::unordered_map<std::string, IniValue> items_;
+      std::string comment_;
     };
 
     using IniSections = std::unordered_map<std::string, IniSection>;
@@ -315,6 +342,9 @@ namespace ini {
 
       ss << root_->root_section.Stringify();
       for (const auto& section : root_->sections) {
+        if (!section.second.GetComment().empty()) {
+          ss << ";" << section.second.GetComment() << "\n";
+        }
         ss << "[" << section.first << "]" << std::endl;
         ss << section.second.Stringify();
       }
@@ -347,28 +377,38 @@ namespace ini {
         return;
       }
 
+      std::string current_comment;
       for (auto&& line : lines) {
         if (line.empty()) continue;
 
-        RemoveComment(line);
+        std::string comment;
+        RemoveComment(line, comment);
+        if (!comment.empty()) {
+          current_comment += comment + "\n";
+        }
         if (line.empty()) continue;
 
         auto item = GetItem(line);
         if (!item.first.empty() && !item.second.empty()) {
           if (current_section_.empty()) {
             GetRootSection().Add(item.first, item.second);
+            GetRootSection()[item.first].SetComment(current_comment);
           } else if (HasSection(current_section_)) {
             (*this)[current_section_].Add(item.first, item.second);
+            (*this)[current_section_][item.first].SetComment(current_comment);
           } else {
             assert(HasSection(current_section_));
             throw std::runtime_error("Section does not have a value with the key: " + current_section_);
           }
+          current_comment.clear();
           continue;
         }
 
         if (auto section = GetSection(line); !section.empty()) {
           current_section_ = section;
           AddSection(current_section_);
+          (*this)[current_section_].SetComment(current_comment);
+          current_comment.clear();
           continue;
         }
 
@@ -378,10 +418,12 @@ namespace ini {
 
     /**
      * @param line removes a ini comment from the given string
+     * @param comment stores the removed comment
      */
-    static void RemoveComment(std::string& line) {
+    static void RemoveComment(std::string& line, std::string& comment) {
       for (auto&& c : line) {
         if (c == ';' || c == '#') {
+          comment = line;
           line.clear();
           return;
         } else if (c != ' ') {
@@ -391,11 +433,15 @@ namespace ini {
 
       std::size_t pos{};
       if (pos = line.find(';'); pos != std::string::npos) {
-        if (line[pos - 1] == ' ')
+        if (line[pos - 1] == ' ') {
+          comment = line.substr(pos);
           line.erase(pos);
+        }
       } else if (pos = line.find('#'); pos != std::string::npos) {
-        if (line[pos - 1] == ' ')
+        if (line[pos - 1] == ' ') {
+          comment = line.substr(pos);
           line.erase(pos);
+        }
       }
     }
 
