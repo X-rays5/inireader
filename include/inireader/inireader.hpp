@@ -229,6 +229,16 @@ namespace ini {
     }
 
     /**
+    * @param section the name of the section
+    * @param key check if the key exists in the section 
+    * @return true if the key exists
+    */
+    [[nodiscard]] bool SectionHasValue(const std::string& section, const std::string& key) const {
+        if (!HasSection(section)) return false;
+        return GetSection(section).HasValue(key);
+    }
+
+    /**
      * @return count of non root sections
      */
     [[nodiscard]] std::size_t GetSectionCount() const {
@@ -247,6 +257,16 @@ namespace ini {
 
       assert(HasSection(section));
       return false;
+    }
+
+    /**
+    * @param section the name of the section
+    * @param key check if the key exists in the section 
+    * @return true if succeeded
+    */
+    bool SectionRemoveKey(const std::string& section, const std::string& key) {
+        if (!HasSection(section)) return false;
+        return GetSection(section).Remove(key);
     }
 
     /**
@@ -319,6 +339,20 @@ namespace ini {
         ss << section.second.Stringify();
       }
       return ss.str();
+    }
+
+    /**
+     * @param out_path the path to the INI file to be saved
+     * @return true if succeeded
+     */
+    bool Save(const std::filesystem::path& out_path) const {
+        std::ofstream ofs(out_path, std::ios::trunc);
+        if (!ofs.is_open()) {
+            return false;
+        }
+        ofs << Stringify();
+        ofs.close();
+        return true;
     }
 
   private:
