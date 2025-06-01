@@ -78,7 +78,9 @@ TEST(Add, Default) {
 
 TEST(Add, Kv) {
   g_testctx->ini_file.AddSection("addedsection").Add("testv", "value");
+  g_testctx->ini_file.AddSection("addedsection2").Add("testv", "value2");
   EXPECT_STREQ(g_testctx->ini_file["addedsection"]["testv"].as<const char*>(), "value");
+  EXPECT_STREQ(g_testctx->ini_file["addedsection2"]["testv"].as<const char*>(), "value2");
 }
 
 TEST(Remove, Default) {
@@ -91,6 +93,7 @@ TEST(Remove, Default) {
 TEST(Remove, Kv) {
   g_testctx->ini_file["addedsection"].Remove("test");
   EXPECT_THROW(g_testctx->ini_file["addedsection"]["test"].as<const char*>(), std::runtime_error);
+  EXPECT_EQ(g_testctx->ini_file.SectionRemoveKey("addedsection2", "testv"), true);
 }
 
 TEST(Remove, Section) {
@@ -112,6 +115,7 @@ TEST(Has, Section) {
 
 TEST(Has, Kv) {
   EXPECT_EQ(g_testctx->ini_file["Section 1"].HasValue("Option 1"), true);
+  EXPECT_EQ(g_testctx->ini_file.SectionHasValue("Section 1", "Option 1"), true);
 }
 
 TEST(Edit, Default) {
@@ -165,6 +169,10 @@ TEST(Conversion, UTF8) {
   #endif
 }
 
+TEST(File, Save) {
+    EXPECT_EQ(g_testctx->ini_file.Save("test2.ini"), true);
+}
+
 int main(int argc, char** argv) {
   constexpr const char* testfile = "default section value = test value ; section less\n"
                                    "\n"
@@ -208,5 +216,6 @@ int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   auto ret = RUN_ALL_TESTS();
   std::filesystem::remove("test.ini");
+  std::filesystem::remove("test2.ini");
   return ret;
 }
